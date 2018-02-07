@@ -49,7 +49,6 @@ public class ICDCode extends DomainObject<Diagnosis> {
 
     }
 
-
     /**
      * Construct from a form
      *

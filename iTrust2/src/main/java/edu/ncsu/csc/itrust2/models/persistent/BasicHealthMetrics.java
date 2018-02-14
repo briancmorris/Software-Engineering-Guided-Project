@@ -181,20 +181,22 @@ public class BasicHealthMetrics extends DomainObject<BasicHealthMetrics> {
      *            the triglyceride reading of the patient.
      * @param weight
      *            the weight of the patient.
+     * 
      */
-    public BasicHealthMetrics ( final int dialostic, final int hdl, final float height,
-            final HouseholdSmokingStatus hss, final float headCircumference, final int ldl,
-            final PatientSmokingStatus pss, final int systolic, final int tri, final float weight ) {
-        setDiastolic( dialostic );
-        setHdl( hdl );
-        setHeight( height );
-        setHouseSmokingStatus( hss );
-        setHeadCircumference( headCircumference );
-        setLdl( ldl );
-        setPatientSmokingStatus( pss );
-        setSystolic( systolic );
-        setTri( tri );
-        setWeight( weight );
+    public BasicHealthMetrics ( final Integer dialostic, final Integer hdl, final Float height,
+            final HouseholdSmokingStatus hss, final Float headCircumference, final Integer ldl,
+            final PatientSmokingStatus pss, final Integer systolic, final Integer tri, final Float weight ) {
+        this.diastolic = dialostic;
+        this.hdl = hdl;
+        this.height = height;
+        this.houseSmokingStatus = hss;
+        this.headCircumference = headCircumference;
+        this.ldl = ldl;
+        this.patientSmokingStatus = pss;
+        this.systolic = systolic;
+        this.tri = tri;
+        this.weight = weight;
+
     }
 
     /**

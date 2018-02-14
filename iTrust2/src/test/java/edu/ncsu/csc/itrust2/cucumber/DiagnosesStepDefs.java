@@ -128,6 +128,8 @@ public class DiagnosesStepDefs {
 
         wait.until( ExpectedConditions.visibilityOfElementLocated( By.name( "notes" ) ) );
         setTextField( By.name( "notes" ), note );
+        wait.until(
+                ExpectedConditions.visibilityOfElementLocated( By.cssSelector( "input[type=radio][value=patient]" ) ) );
         driver.findElement( By.cssSelector( "input[type=radio][value=patient]" ) ).click();
         driver.findElement( By.name( "type" ) ).click();
         driver.findElement( By.name( "hospital" ) ).click();

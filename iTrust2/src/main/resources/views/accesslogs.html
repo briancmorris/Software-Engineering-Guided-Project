@@ -1,0 +1,43 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="ISO-8859-1">
+<title>View Access Logs</title>
+<!-- jQuery library -->
+<script src="https://ajax.googleapis.com/ajax/libs/jquery/3.2.1/jquery.min.js"></script>
+
+<!-- AngularJS library -->
+<script src="https://ajax.googleapis.com/ajax/libs/angularjs/1.6.4/angular.min.js"></script>
+
+<!-- Latest compiled JavaScript -->
+<script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/js/bootstrap.min.js"></script>
+
+<!-- Latest compiled and minified CSS -->
+<link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/css/bootstrap.min.css">
+</head>
+
+<body>
+
+<div ng-app="tableApp" ng-controller="tableCtrl"> 
+	<table>
+		<tr>
+			<th>Name of Accessor:</th>
+			<th>Role of Accessor:</th>
+			<th>Date and Time of Access:</th>
+			<th>Transaction Type</th>
+		</tr>
+		<tr ng-repeat="log in entries">
+			<td>{{ log.PrimaryUser }}</td>
+			<td>{{ log.PrimaryUser.role }}</td>
+			<td>{{ log.DateTime }}</td>
+			<td>{{ log.Type}}</td>
+		</tr>
+	</table>
+</div>
+
+<script>
+	
+</script>
+
+</body>
+</html>

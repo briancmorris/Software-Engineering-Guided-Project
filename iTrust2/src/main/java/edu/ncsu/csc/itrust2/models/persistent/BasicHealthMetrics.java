@@ -159,6 +159,45 @@ public class BasicHealthMetrics extends DomainObject<BasicHealthMetrics> {
     }
 
     /**
+     * Used to test the BasicHealthMetrics class.
+     *
+     * @param dialostic
+     *            Dialostic for patient.
+     * @param hdl
+     *            HDL or patient.
+     * @param height
+     *            Heigh of patient.
+     * @param hss
+     *            Smoking status of the household.
+     * @param headCircumference
+     *            the circumference of the patient's head.
+     * @param ldl
+     *            the LDL of the patient.
+     * @param pss
+     *            the smoking status of the patient.
+     * @param systolic
+     *            the systolic of the patient.
+     * @param tri
+     *            the triglyceride reading of the patient.
+     * @param weight
+     *            the weight of the patient.
+     */
+    public BasicHealthMetrics ( final int dialostic, final int hdl, final float height,
+            final HouseholdSmokingStatus hss, final float headCircumference, final int ldl,
+            final PatientSmokingStatus pss, final int systolic, final int tri, final float weight ) {
+        setDiastolic( dialostic );
+        setHdl( hdl );
+        setHeight( height );
+        setHouseSmokingStatus( hss );
+        setHeadCircumference( headCircumference );
+        setLdl( ldl );
+        setPatientSmokingStatus( pss );
+        setSystolic( systolic );
+        setTri( tri );
+        setWeight( weight );
+    }
+
+    /**
      * ID of the AppointmentRequest
      */
     @Id

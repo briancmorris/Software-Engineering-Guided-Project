@@ -6,5 +6,22 @@
 	<div th:fragment="content">
 		<h1>Welcome to iTrust2 - Admin</h1>
 	</div>
+<div ng-app="myApp" ng-controller="LogCtnrl"> 
+
+<table>
+  <tr ng-repeat="x in names">
+    <td>{{ x.logCode }}</td>
+  </tr>
+</table>
+
+</div>
+
+<script>
+var app = angular.module('myApp', []);
+app.controller('LogCtnrl', function($scope, $http) {
+    $http.get('/api/v1/logentries')
+    .then(function (response) {$scope.names = response.data.records;});
+});
+</script>
 </body>
 </html>

@@ -52,12 +52,25 @@ public class APILogEntryController extends APIController {
     }
 
     /**
+     * Retrieves and returns the top 10 log entries for the currently logged in
+     * user.
+     *
+     * @return response
+     */
+    @GetMapping ( BASE_PATH + "/logentries/user" )
+    public List<LogEntry> getTopTenLogEntriesForUser () {
+        final String user = LoggerUtil.currentUser();
+        final List<LogEntry> entries = LoggerUtil.getTopForUser( user, new Integer( 10 ) );
+        return entries;
+    }
+
+    /**
      * Retrieves and returns the log entries for the currently logged in user.
      *
      * @return response
      */
     @GetMapping ( BASE_PATH + "/logentries/user" )
-    public List<LogEntry> getLogEntriesForUser () {
+    public List<LogEntry> getAllLogEntriesForUser () {
         final String user = LoggerUtil.currentUser();
         final List<LogEntry> entries = LoggerUtil.getAllForUser( user );
         LoggerUtil.log( TransactionType.VIEW_ACCESS_LOGS, user );

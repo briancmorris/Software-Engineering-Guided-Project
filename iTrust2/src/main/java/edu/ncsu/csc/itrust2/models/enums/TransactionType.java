@@ -245,7 +245,12 @@ public enum TransactionType {
     /**
      * HCP edits patient's demographics
      */
-    PATIENT_DEMOGRAPHICS_EDIT ( 1201, "HCP edits patient's demographics", true );
+    PATIENT_DEMOGRAPHICS_EDIT ( 1201, "HCP edits patient's demographics", true ),
+
+    /**
+     * User views access logs.
+     */
+    VIEW_ACCESS_LOGS ( 1301, "Log events viewed", true );
 
     /**
      * Creates a TransactionType for logging events

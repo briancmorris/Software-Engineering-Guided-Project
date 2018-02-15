@@ -13,6 +13,11 @@ import javax.mail.Transport;
 import javax.mail.internet.InternetAddress;
 import javax.mail.internet.MimeMessage;
 
+import edu.ncsu.csc.itrust2.models.enums.Role;
+import edu.ncsu.csc.itrust2.models.persistent.Patient;
+import edu.ncsu.csc.itrust2.models.persistent.Personnel;
+import edu.ncsu.csc.itrust2.models.persistent.User;
+
 /**
  * Class for sending email. Used for the Password Reset emails.
  *
@@ -24,7 +29,7 @@ public class EmailUtil {
     /**
      * Send an email from the email account in the system's `email.properties`
      * file
-     * 
+     *
      * @param addr
      *            Address to send to
      * @param subject
@@ -93,6 +98,31 @@ public class EmailUtil {
             e.printStackTrace();
             throw e;
         }
+    }
+
+    /**
+     * Takes a user and returns their email after correctly typing them as
+     * either a patient or personnel
+     *
+     * @param user
+     *            the user whose email needs to be found
+     * @return the user's email
+     */
+    public static String getUserEmail ( final User user ) {
+        // if ( user.getRole() == Role.ROLE_PATIENT ) {
+        // final Patient pat = Patient.getPatient( user );
+        // return pat.getEmail();
+        // }
+        // else {
+        // final Personnel per = Personnel.getByName( user );
+        // return per.getEmail();
+        // }
+        if ( user == null || user.getRole() == null ) {
+            throw new IllegalArgumentException( "Null user or role." );
+        }
+
+        return ( user.getRole() == Role.ROLE_PATIENT ? Patient.getPatient( user ).getEmail()
+                : Personnel.getByName( user ).getEmail() );
     }
 
 }

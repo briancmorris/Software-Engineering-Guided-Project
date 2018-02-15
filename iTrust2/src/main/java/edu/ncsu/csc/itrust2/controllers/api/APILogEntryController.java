@@ -8,7 +8,9 @@ import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RestController;
 
+import edu.ncsu.csc.itrust2.models.enums.TransactionType;
 import edu.ncsu.csc.itrust2.models.persistent.LogEntry;
+import edu.ncsu.csc.itrust2.utils.LoggerUtil;
 
 /**
  * REST controller for interacting with Log Entry-related endpoints This will
@@ -50,15 +52,15 @@ public class APILogEntryController extends APIController {
     }
 
     /**
-     * Retrieves and returns a specific log entry specified by the id provided.
+     * Retrieves and returns the log entries for the currently logged in user.
      *
-     * @param user
-     *            the user involved in the log entries
      * @return response
      */
-    @GetMapping ( BASE_PATH + "/logentries/{user}" )
-    public List<LogEntry> getLogEntriesForUser ( @PathVariable ( "user" ) final String user ) {
-        final List<LogEntry> entries = LogEntry.getAllForUser( user );
+    @GetMapping ( BASE_PATH + "/logentries/user" )
+    public List<LogEntry> getLogEntriesForUser () {
+        final String user = LoggerUtil.currentUser();
+        final List<LogEntry> entries = LoggerUtil.getAllForUser( user );
+        LoggerUtil.log( TransactionType.VIEW_ACCESS_LOGS, user );
         return entries;
     }
 

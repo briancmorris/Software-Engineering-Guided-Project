@@ -134,42 +134,41 @@ public class APIPasswordTest {
 
     }
 
-    // /**
-    // * This tests that api for resetting a password
-    // *
-    // * @throws Exception
-    // */
-    // @WithMockUser ( username = "patientPW2", roles = { "USER", "ADMIN" } )
-    // @Test
-    // public void testPasswordReset () throws Exception {
-    // final UserForm patient = new UserForm( "patientPW2", "123456",
-    // Role.ROLE_PATIENT, 1 );
-    // User user = new User( patient );
-    // user.save();
-    //
-    // user = User.getByName( "patientPW2" ); // ensure they exist
-    // final PersonnelForm personnel = new PersonnelForm();
-    // personnel.setAddress1( "1 Test Street" );
-    // personnel.setAddress2( "Address Part 2" );
-    // personnel.setCity( "Prag" );
-    // personnel.setEmail( "csc326s100x@gmail.com" );
-    // personnel.setFirstName( "Test" );
-    // personnel.setLastName( "HCP" );
-    // personnel.setPhone( "123-456-7890" );
-    // personnel.setSelf( user.getUsername() );
-    // personnel.setState( State.NC.toString() );
-    // personnel.setZip( "27514" );
-    // mvc.perform( post( "/api/v1/personnel" ).contentType(
-    // MediaType.APPLICATION_JSON )
-    // .content( TestUtils.asJsonString( personnel ) ) ).andExpect(
-    // status().isOk() );
-    // mvc.perform( post( "/api/v1/requestPasswordReset" ).contentType(
-    // MediaType.APPLICATION_JSON )
-    // .content( personnel.getSelf() ) ).andExpect( status().isOk() );
-    //
-    // final Personnel p = Personnel.getByName( user );
-    // p.delete();
-    // user.delete();
-    //
-    // }
+    /**
+     * This tests that api for resetting a password
+     *
+     * @throws Exception
+     */
+    @WithMockUser ( username = "patientPW2", roles = { "USER", "ADMIN" } )
+    @Test
+    public void testPasswordReset () throws Exception {
+        final UserForm patient = new UserForm( "patientPW2", "123456", Role.ROLE_PATIENT, 1 );
+        User user = new User( patient );
+        user.save();
+
+        user = User.getByName( "patientPW2" ); // ensure they exist
+        final PersonnelForm personnel = new PersonnelForm();
+        personnel.setAddress1( "1 Test Street" );
+        personnel.setAddress2( "Address Part 2" );
+        personnel.setCity( "Prag" );
+        personnel.setEmail( "csc326s100x@gmail.com" );
+        personnel.setFirstName( "Test" );
+        personnel.setLastName( "HCP" );
+        personnel.setPhone( "123-456-7890" );
+        personnel.setSelf( user.getUsername() );
+        personnel.setState( State.NC.toString() );
+        personnel.setZip( "27514" );
+        mvc.perform( post( "/api/v1/personnel" ).contentType( MediaType.APPLICATION_JSON )
+                .content( TestUtils.asJsonString( personnel ) ) ).andExpect( status().isOk() );
+        mvc.perform( post( "/api/v1/requestPasswordReset" ).contentType( MediaType.APPLICATION_JSON )
+                .content( personnel.getSelf() ) ).andExpect( status().isOk() );
+
+        mvc.perform( post( "/api/v1/requestPasswordReset" ).contentType( MediaType.APPLICATION_JSON )
+                .content( "invaliduser" ) ).andExpect( status().isBadRequest() );
+
+        final Personnel p = Personnel.getByName( user );
+        p.delete();
+        user.delete();
+
+    }
 }

@@ -49,4 +49,17 @@ public class APILogEntryController extends APIController {
                 : new ResponseEntity( entry, HttpStatus.OK );
     }
 
+    /**
+     * Retrieves and returns a specific log entry specified by the id provided.
+     *
+     * @param user
+     *            the user involved in the log entries
+     * @return response
+     */
+    @GetMapping ( BASE_PATH + "/logentries/{user}" )
+    public List<LogEntry> getLogEntriesForUser ( @PathVariable ( "user" ) final String user ) {
+        final List<LogEntry> entries = LogEntry.getAllForUser( user );
+        return entries;
+    }
+
 }

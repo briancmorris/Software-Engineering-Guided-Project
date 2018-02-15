@@ -16,9 +16,9 @@
 <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/css/bootstrap.min.css">
 </head>
 
-<body>
+<body ng-app="myApp" class="ng-cloak">
 
-<div ng-app="tableApp" ng-controller="tableCtrl"> 
+<div ng-controller="tableCtrl"> 
 	<table>
 		<tr>
 			<th>Name of Accessor:</th>
@@ -26,18 +26,36 @@
 			<th>Date and Time of Access:</th>
 			<th>Transaction Type</th>
 		</tr>
-		<tr ng-repeat="log in entries">
-			<td>{{ log.PrimaryUser }}</td>
-			<td>{{ log.PrimaryUser.role }}</td>
-			<td>{{ log.DateTime }}</td>
-			<td>{{ log.Type}}</td>
+		<tr ng-repeat="entry in entries">
+			<td>{{entry.accessor}}</td>
+			<td>{{entry.role}}</td>
+			<td>{{entry.date}}</td>
+			<td>{{entry.logCode.getDescription()}}</td>
 		</tr>
 	</table>
 </div>
 
 <script>
-	
+	// Create app to control webpage.
+	var app = angular.module('myApp', []);
+
+	// Controller for app.
+	app.controller('tableCtrl', ['$http', '$scope', function($http, $scope) {
+		// Reference this as self.
+		var self = this;
+		
+		// List of log entries for the logged in user.
+		self.entries = null;
+		
+		// Get all entries associated with the logged in user.
+		function getEntriesForUser() {
+			$http.get("/api/v1/logentries/" + user).then(function (response) {
+					self.entries = response.data;
+				});
+		}
+	]});
 </script>
 
 </body>
+
 </html>

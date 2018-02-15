@@ -1,8 +1,11 @@
 package edu.ncsu.csc.itrust2.utils;
 
+import java.io.File;
+import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.io.InputStream;
 import java.util.Properties;
+import java.util.Scanner;
 
 import javax.mail.Authenticator;
 import javax.mail.Message;
@@ -50,22 +53,45 @@ public class EmailUtil {
         final String password;
         final String host;
 
-        final Properties properties = new Properties();
+        final File emailFile;
+        Scanner emailScan = null;
 
-        final String filename = "email.properties";
-        input = DBUtil.class.getClassLoader().getResourceAsStream( filename );
-        if ( null != input ) {
-            try {
-                properties.load( input );
-            }
-            catch ( final IOException e ) {
-                e.printStackTrace();
-            }
+        try {
+            emailFile = new File( "/src/main/java/email.properties" );
+            emailScan = new Scanner( emailFile );
         }
-        from = properties.getProperty( "from" );
-        username = properties.getProperty( "username" );
-        password = properties.getProperty( "password" );
-        host = properties.getProperty( "host" );
+        catch ( final FileNotFoundException fnfe ) {
+            emailScan = null;
+        }
+
+        if ( null != emailScan ) {
+            emailScan.next(); // from
+            from = emailScan.next();
+            emailScan.next(); // username
+            username = emailScan.next();
+            emailScan.next(); // password
+            password = emailScan.next();
+            emailScan.next(); // host
+            host = emailScan.next();
+            emailScan.close();
+        }
+        else {
+            final Properties properties = new Properties();
+            final String filename = "email.properties";
+            input = DBUtil.class.getClassLoader().getResourceAsStream( filename );
+            if ( null != input ) {
+                try {
+                    properties.load( input );
+                }
+                catch ( final IOException e ) {
+                    e.printStackTrace();
+                }
+            }
+            from = properties.getProperty( "from" );
+            username = properties.getProperty( "username" );
+            password = properties.getProperty( "password" );
+            host = properties.getProperty( "host" );
+        }
 
         /*
          * Source for java mail code:
@@ -109,20 +135,24 @@ public class EmailUtil {
      * @return the user's email
      */
     public static String getUserEmail ( final User user ) {
-        // if ( user.getRole() == Role.ROLE_PATIENT ) {
-        // final Patient pat = Patient.getPatient( user );
-        // return pat.getEmail();
-        // }
-        // else {
-        // final Personnel per = Personnel.getByName( user );
-        // return per.getEmail();
-        // }
         if ( user == null || user.getRole() == null ) {
             throw new IllegalArgumentException( "Null user or role." );
         }
 
-        return ( user.getRole() == Role.ROLE_PATIENT ? Patient.getPatient( user ).getEmail()
-                : Personnel.getByName( user ).getEmail() );
+        if ( user.getRole() == Role.ROLE_PATIENT ) {
+            final Patient pat = Patient.getPatient( user );
+            if ( pat == null ) {
+                throw new IllegalArgumentException( "Null user or role." );
+            }
+            return pat.getEmail();
+        }
+        else {
+            final Personnel per = Personnel.getByName( user );
+            if ( per == null ) {
+                throw new IllegalArgumentException( "Null user or role." );
+            }
+            return per.getEmail();
+        }
     }
 
 }

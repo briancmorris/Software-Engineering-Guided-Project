@@ -57,7 +57,7 @@ public class APILogEntryController extends APIController {
      *
      * @return response
      */
-    @GetMapping ( BASE_PATH + "/logentries/user" )
+    @GetMapping ( BASE_PATH + "/logentries/user10" )
     public List<LogEntry> getTopTenLogEntriesForUser () {
         final String user = LoggerUtil.currentUser();
         final List<LogEntry> entries = LoggerUtil.getTopForUser( user, new Integer( 10 ) );
@@ -69,7 +69,7 @@ public class APILogEntryController extends APIController {
      *
      * @return response
      */
-    @GetMapping ( BASE_PATH + "/logentries/user" )
+    @GetMapping ( BASE_PATH + "/logentries/userAll" )
     public List<LogEntry> getAllLogEntriesForUser () {
         final String user = LoggerUtil.currentUser();
         final List<LogEntry> entries = LoggerUtil.getAllForUser( user );

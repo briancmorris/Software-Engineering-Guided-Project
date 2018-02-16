@@ -5,23 +5,56 @@
 <body th:include="layout :: body" th:with="content=~{::content}">
 	<div th:fragment="content">
 		<h1>Welcome to iTrust2 - Admin</h1>
+		
+		<script th:inline="javascript">
+		/* Otherwise Thymeleaf tries to parse Javascript as XML and breaks itself sometimes.  Sigh */
+		/*<![CDATA[*/
+			var app = angular.module("homeLogApp", []);
+			app.controller('manageLogCtrl', function($scope, $http) {
+
+				$scope.codes = [];
+				$scope.loadTable = function() {
+					// get list of icd codes from rest api
+					$http.get("/iTrust2/api/v1/logentries").then(
+							function(response) {
+								$scope.codes = response.data; // or just response?
+								$scope.message = "";
+							}, function(rejection) {
+								$scope.codes = [];
+								$scope.codes = "Could not display log";
+							});
+				}			
+				
+				// load table upon page loading
+				$scope.loadTable();
+			});
+			/*]]>*/
+		</script>
+		
+		<div ng-app="homeLogApp" ng-controller="manageLogCtrl">
+		<!-- Info on tables from https://hello-angularjs.appspot.com/removetablerow -->			
+			<h4 style="color:red" ng-model="message"></h4>
+			
+			<h1>Log Entries</h1>
+			<table style="width:100%">
+				<tr>
+					<td style="vertical-align: top">
+						<table class="table">
+							<tr>
+								<th>ICD-10 Code</th>
+								<th>Description</th>
+							</tr>
+							<tr name="codeRow" ng-repeat="c in codes | orderBy: 'code'" codeId={{c.id}}>
+								<td name="codeCell">{{c.logCode}}</td>
+								<td name="descriptionCell">{{c.primaryUser}}</td>
+							</tr>
+						</table>
+					</td>
+				</tr>
+			</table>
+		</div>
+		
 	</div>
-<div ng-app="myApp" ng-controller="LogCtnrl"> 
-
-<table>
-  <tr ng-repeat="x in names">
-    <td>{{ x.logCode }}</td>
-  </tr>
-</table>
-
-</div>
-
-<script>
-var app = angular.module('myApp', []);
-app.controller('LogCtnrl', function($scope, $http) {
-    $http.get('/api/v1/logentries')
-    .then(function (response) {$scope.names = response.data.records;});
-});
-</script>
+	
 </body>
 </html>

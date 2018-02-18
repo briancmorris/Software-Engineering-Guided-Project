@@ -1,0 +1,64 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head th:include="layout :: head(title=~{::title},links=~{})">
+<title>View Access Logs</title>
+<!-- AngularJS library -->
+<script src="https://ajax.googleapis.com/ajax/libs/angularjs/1.6.4/angular.min.js"></script>
+</head>
+
+<body th:include="layout :: body" th:with="content=~{::content}">
+	<div th:fragment="content">
+		<script th:inline="javascript">
+		/*<![CDATA[*/
+			// Create app to control webpage.
+			var app = angular.module('tableApp', []);
+
+			// Controller for app.
+			app.controller('tableCtrl', function($http, $scope) {
+				// Entries list.
+				$scope.entries = [];
+				// Load the table.
+				$scope.loadTable = function() {
+					// Get entries from rest API.
+					$http.get("/api/v1/logentries/userAll").then(
+							function(response) {
+								$scope.entries = response.data;
+								$scope.message = "";
+							}, function(rejection) {
+								$scope.entries = [];
+								$scope.message = "Could not display log entries.";
+							});
+				}
+				// Load table on landing.
+				$scope.loadTable();
+		/*]]>*/
+		</script>
+		
+		<div ng-app="tableApp" ng-controller="tableCtrl">
+			<h4 style="color:red" ng-model="message"></h4>
+			<h1>Log Entries:</h1>
+			<table style="width:100%">
+				<tr>
+					<td style="vertical-align: top">
+						<table class="table">
+							<tr>
+								<th>Name of Accessor:</th>
+								<th>Role of Accessor:</th>
+								<th>Date and Time of Access:</th>
+								<th>Transaction Type</th>
+							</tr>
+							<tr name="entryRow" ng-repeat="e in entries">
+								<td name="accessorCell">{{e.primaryUser}}</td>
+								<td name="roleCell">{{e.role}}</td>
+								<td name="dateCell">{{e.date}}</td>
+								<td name="typeCell">{{e.type}}</td>
+							</tr>
+						</table>
+					</td>
+				</tr>
+			</table>
+		</div>
+	</div>
+
+</body>
+</html>

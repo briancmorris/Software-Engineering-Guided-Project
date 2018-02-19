@@ -7,7 +7,7 @@
 </head>
 
 <body th:include="layout :: body" th:with="content=~{::content}">
-	<div th:fragment="content">
+	<div>
 		<script th:inline="javascript">
 		/*<![CDATA[*/
 			// Create app to control webpage.
@@ -37,26 +37,20 @@
 		<div ng-app="tableApp" ng-controller="tableCtrl">
 			<h4 style="color:red" ng-model="message"></h4>
 			<h1>Log Entries:</h1>
-			<table style="width:100%">
-				<tr>
-					<td style="vertical-align: top">
-						<table class="table">
-							<tr>
-								<th>Name of Accessor:</th>
-								<th>Role of Accessor:</th>
-								<th>Date and Time of Access:</th>
-								<th>Transaction Type</th>
-							</tr>
-							<tr name="entryRow" ng-repeat="e in entries">
-								<td name="accessorCell">{{e.primaryUser}}</td>
-								<td name="roleCell">{{e.role}}</td>
-								<td name="dateCell">{{e.date}}</td>
-								<td name="typeCell">{{e.type}}</td>
-							</tr>
-						</table>
-					</td>
-				</tr>
-			</table>
+				<table class="table" style="width:100%">
+					<tr style="vertical-align: top">
+						<th>Name of Accessor</th>
+						<th>Role of Accessor</th>
+						<th>Date and Time of Access</th>
+						<th>Transaction Type</th>
+					</tr>
+					<tr name="entryRow" ng-repeat="e in entries" style="vertical-align: top">
+						<td name="accessorCell">{{e.primaryUser}}</td>
+						<td name="roleCell">{{e.primaryUser}}</td>
+						<td name="dateCell">{{e.date}}</td>
+						<td name="typeCell">{{e.logCode}}</td>
+					</tr>
+				</table>
 		</div>
 	</div>
 

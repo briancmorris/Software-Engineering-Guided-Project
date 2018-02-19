@@ -1,5 +1,6 @@
 package edu.ncsu.csc.itrust2.models.persistent;
 
+import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.List;
 
@@ -14,6 +15,7 @@ import org.hibernate.criterion.Criterion;
 import org.hibernate.criterion.Restrictions;
 
 import edu.ncsu.csc.itrust2.models.enums.TransactionType;
+import edu.ncsu.csc.itrust2.utils.LoggerUtil;
 
 /**
  * Class that represents a LogEntry that is created in response to certain user
@@ -115,6 +117,58 @@ public class LogEntry extends DomainObject<LogEntry> {
     public static List<LogEntry> getAllForUser ( final String user ) {
         return getWhere( createCriterionList(
                 Restrictions.or( createCriterion( "primaryUser", user ), createCriterion( "secondaryUser", user ) ) ) );
+    }
+
+    /**
+     * Retrieve all the LogEntries for the currently logged in User by the
+     * specified date range.
+     *
+     * @param user
+     *            The user to retrieve logs for.
+     * @param startDate
+     *            Start date.
+     * @param endDate
+     *            End date.
+     * @return List of LogEntries sorted by date.
+     */
+    public static List<LogEntry> getAllByDates ( final String user, final String startDate, final String endDate ) {
+        // Parse the start string for year, month, and day.
+        final int startYear = Integer.parseInt( startDate.substring( 0, 4 ) );
+        final int startMonth = Integer.parseInt( startDate.substring( 4, 6 ) );
+        final int startDay = Integer.parseInt( startDate.substring( 6, startDate.length() ) );
+
+        // Parse the end string for year, month, and day.
+        final int endYear = Integer.parseInt( endDate.substring( 0, 4 ) );
+        final int endMonth = Integer.parseInt( endDate.substring( 4, 6 ) );
+        final int endDay = Integer.parseInt( endDate.substring( 6, endDate.length() ) );
+
+        // Get all the log entries for the currently logged in users.
+        final List<LogEntry> all = LoggerUtil.getAllForUser( user );
+        // Create a new list to return.
+        final List<LogEntry> dateEntries = new ArrayList<LogEntry>();
+
+        // Compare the dates of the entries and the given function parameters.
+        for ( int i = 0; i < all.size(); i++ ) {
+            // The current log entry being looked at in the all list.
+            final LogEntry e = all.get( i );
+            // Log entry's time object.
+            final Calendar eTime = e.getTime();
+
+            // Get the date values.
+            final int eYear = eTime.get( Calendar.YEAR );
+            final int eMonth = eTime.get( Calendar.MONTH );
+            final int eDay = eTime.get( Calendar.DAY_OF_MONTH );
+
+            // Compare values of e's date to the given date range.
+            if ( startYear <= endYear && eYear >= startYear && eYear <= endYear ) {
+                if ( startMonth <= endMonth && eMonth >= startMonth && eYear <= endMonth ) {
+                    if ( startDay <= endDay && eDay >= startDay && eDay <= endDay ) {
+                        dateEntries.add( e );
+                    }
+                }
+            }
+        }
+        return dateEntries;
     }
 
     /**

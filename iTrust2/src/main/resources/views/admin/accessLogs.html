@@ -7,7 +7,7 @@
 </head>
 
 <body th:include="layout :: body" th:with="content=~{::content}">
-	<div>
+	<div th:fragment="content">
 		<script th:inline="javascript">
 		/*<![CDATA[*/
 			// Create app to control webpage.
@@ -33,7 +33,7 @@
 				$scope.loadTable();
 		/*]]>*/
 		</script>
-		
+
 		<div ng-app="tableApp" ng-controller="tableCtrl">
 			<h4 style="color:red" ng-model="message"></h4>
 			<h1>Log Entries:</h1>
@@ -53,6 +53,5 @@
 				</table>
 		</div>
 	</div>
-
 </body>
 </html>

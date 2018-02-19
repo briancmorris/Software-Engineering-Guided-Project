@@ -156,4 +156,15 @@ public class AdminUserController {
         model.addAttribute( "users", User.getUsers() );
         return "admin/drugs";
     }
+
+    /**
+     * Retrieves accessLogs page for an admin.
+     *
+     * @return The page to display
+     */
+    @RequestMapping ( value = "admin/accessLogs" )
+    @PreAuthorize ( "hasRole('ROLE_ADMIN')" )
+    public String accessLogs () {
+        return "admin/accessLogs";
+    }
 }

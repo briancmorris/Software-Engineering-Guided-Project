@@ -8,7 +8,9 @@ import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RestController;
 
+import edu.ncsu.csc.itrust2.models.enums.TransactionType;
 import edu.ncsu.csc.itrust2.models.persistent.LogEntry;
+import edu.ncsu.csc.itrust2.utils.LoggerUtil;
 
 /**
  * REST controller for interacting with Log Entry-related endpoints This will
@@ -47,6 +49,32 @@ public class APILogEntryController extends APIController {
         return null == entry
                 ? new ResponseEntity( errorResponse( "No log entry found for id " + id ), HttpStatus.NOT_FOUND )
                 : new ResponseEntity( entry, HttpStatus.OK );
+    }
+
+    /**
+     * Retrieves and returns the top 10 log entries for the currently logged in
+     * user.
+     *
+     * @return response
+     */
+    @GetMapping ( BASE_PATH + "/logentries/user10" )
+    public List<LogEntry> getTopTenLogEntriesForUser () {
+        final String user = LoggerUtil.currentUser();
+        final List<LogEntry> entries = LoggerUtil.getTopForUser( user, new Integer( 10 ) );
+        return entries;
+    }
+
+    /**
+     * Retrieves and returns the log entries for the currently logged in user.
+     *
+     * @return response
+     */
+    @GetMapping ( BASE_PATH + "/logentries/userAll" )
+    public List<LogEntry> getAllLogEntriesForUser () {
+        final String user = LoggerUtil.currentUser();
+        final List<LogEntry> entries = LoggerUtil.getAllForUser( user );
+        LoggerUtil.log( TransactionType.VIEW_ACCESS_LOGS, user );
+        return entries;
     }
 
 }

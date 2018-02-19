@@ -247,6 +247,11 @@ public enum TransactionType {
      */
     PATIENT_DEMOGRAPHICS_EDIT ( 1201, "HCP edits patient's demographics", true ),
 
+    /** 
+     * User views access logs.
+     */
+    VIEW_ACCESS_LOGS ( 1301, "Log events viewed", true );
+  
     /**
      * Email sent to user after changing password
      */

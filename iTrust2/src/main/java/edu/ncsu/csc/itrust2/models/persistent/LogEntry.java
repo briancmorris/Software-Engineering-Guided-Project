@@ -161,7 +161,7 @@ public class LogEntry extends DomainObject<LogEntry> {
 
             // Compare values of e's date to the given date range.
             if ( startYear <= endYear && eYear >= startYear && eYear <= endYear ) {
-                if ( startMonth <= endMonth && eMonth >= startMonth && eYear <= endMonth ) {
+                if ( startMonth <= endMonth && eMonth >= startMonth && eMonth <= endMonth ) {
                     if ( startDay <= endDay && eDay >= startDay && eDay <= endDay ) {
                         dateEntries.add( e );
                     }

@@ -4,6 +4,8 @@ import java.util.List;
 import java.util.Vector;
 import java.util.stream.Collectors;
 
+import javax.mail.MessagingException;
+
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Controller;
@@ -17,6 +19,9 @@ import edu.ncsu.csc.itrust2.forms.patient.AppointmentRequestForm;
 import edu.ncsu.csc.itrust2.models.enums.Status;
 import edu.ncsu.csc.itrust2.models.enums.TransactionType;
 import edu.ncsu.csc.itrust2.models.persistent.AppointmentRequest;
+import edu.ncsu.csc.itrust2.models.persistent.Patient;
+import edu.ncsu.csc.itrust2.models.persistent.User;
+import edu.ncsu.csc.itrust2.utils.EmailUtil;
 import edu.ncsu.csc.itrust2.utils.LoggerUtil;
 
 /**
@@ -81,7 +86,43 @@ public class AppointmentControllerHCP {
         LoggerUtil.log(
                 aptAction ? TransactionType.APPOINTMENT_REQUEST_DENIED : TransactionType.APPOINTMENT_REQUEST_APPROVED,
                 ar.getHcp().getUsername(), ar.getPatient().getUsername() );
+        sendAppointmentStatusEmail( ar.getPatient(), aptAction );
         return "hcp/viewAppointmentRequestsResult";
+    }
+
+    /**
+     * Sends an email to a patient to notify them of their appointment status
+     * change
+     *
+     * @param patient
+     *            the patient to send the email to
+     * @param isDenied
+     *            is true if the appointment request was denied, false if
+     *            accepted
+     */
+    private void sendAppointmentStatusEmail ( final User patient, final boolean isDenied ) {
+        try {
+            final String userEmail = EmailUtil.getUserEmail( patient );
+            if ( userEmail == null ) {
+                LoggerUtil.log( TransactionType.EMAIL_NOT_SENT, patient.getUsername(), null,
+                        "Unable to send email to " + patient.getUsername() + " for appointment status notification." );
+            }
+            else {
+                String body = "Hello " + Patient.getPatient( patient ).getFirstName();
+                body += ",\n\nYour appointment request has been " + ( isDenied ? "denied" : "approved" );
+                body += ". Please check your iTrust2 account for more information.";
+                body += "\n\n--The iTrust2 Team";
+
+                EmailUtil.sendEmail( userEmail, "Appointment Status Update", body );
+
+                LoggerUtil.log( TransactionType.EMAIL_APPOINTMENT_STATUS, patient.getUsername(), null,
+                        "Email sent to " + userEmail + " for appointment status notification." );
+            }
+        }
+        catch ( final MessagingException e ) {
+            LoggerUtil.log( TransactionType.EMAIL_NOT_SENT, patient.getUsername(), null,
+                    "Unable to send email to " + patient.getUsername() + " for appointment status notification." );
+        }
     }
 
     /**

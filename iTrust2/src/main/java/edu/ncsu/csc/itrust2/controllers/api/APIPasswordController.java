@@ -2,6 +2,8 @@ package edu.ncsu.csc.itrust2.controllers.api;
 
 import java.net.InetAddress;
 
+import javax.mail.MessagingException;
+
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.core.env.Environment;
 import org.springframework.http.HttpStatus;
@@ -62,6 +64,9 @@ public class APIPasswordController extends APIController {
                 user.save();
                 LoggerUtil.log( TransactionType.PASSWORD_UPDATE_SUCCESS, user.getUsername(),
                         "Successfully changed password for user " + user.getUsername() );
+
+                sendPasswordEmail( user );
+
                 return new ResponseEntity( successResponse( "Password changed successfully" ), HttpStatus.OK );
             }
 
@@ -76,6 +81,35 @@ public class APIPasswordController extends APIController {
                     errorResponse(
                             "Could not change password for " + user.getUsername() + " because of " + e.getMessage() ),
                     HttpStatus.BAD_REQUEST );
+        }
+    }
+
+    /**
+     * Sends an email to a user after a successful password change or reset
+     *
+     * @param user
+     *            the user to send the email to
+     */
+    private void sendPasswordEmail ( final User user ) {
+        try {
+            final String userEmail = EmailUtil.getUserEmail( user );
+            if ( userEmail == null ) {
+                LoggerUtil.log( TransactionType.EMAIL_NOT_SENT, user.getUsername(), null,
+                        "Unable to send email to " + user.getUsername() + " for password change notification." );
+            }
+            else {
+                String body = "Hello " + user.getUsername() + ",\n\nYour password has been successfully changed. ";
+                body += "If you did not change your password, please contact an administrator immediately.";
+                body += "\n\n--The iTrust2 Team";
+
+                EmailUtil.sendEmail( userEmail, "iTrust2 Password Change", body );
+                LoggerUtil.log( TransactionType.EMAIL_PASSWORD_CHANGE, user.getUsername(), null,
+                        "Email sent to " + userEmail + " for password change notification." );
+            }
+        }
+        catch ( final MessagingException e ) {
+            LoggerUtil.log( TransactionType.EMAIL_NOT_SENT, user.getUsername(), null,
+                    "Unable to send email to " + user.getUsername() + " for password change notification." );
         }
     }
 
@@ -165,6 +199,9 @@ public class APIPasswordController extends APIController {
 
                 LoggerUtil.log( TransactionType.PASSWORD_UPDATE_SUCCESS, user.getUsername(),
                         "Successfully changed password for user " + user.getUsername() );
+
+                sendPasswordEmail( user );
+
                 return new ResponseEntity( successResponse( "Passsword changed successfully" ), HttpStatus.OK );
             }
             LoggerUtil.log( TransactionType.PASSWORD_UPDATE_FAILURE, user.getUsername(),

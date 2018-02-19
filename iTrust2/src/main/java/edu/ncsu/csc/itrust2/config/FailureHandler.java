@@ -3,6 +3,7 @@ package edu.ncsu.csc.itrust2.config;
 import java.io.IOException;
 import java.util.Calendar;
 
+import javax.mail.MessagingException;
 import javax.servlet.ServletException;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
@@ -14,10 +15,13 @@ import org.springframework.security.web.authentication.SimpleUrlAuthenticationFa
 import org.springframework.security.web.authentication.UsernamePasswordAuthenticationFilter;
 
 import edu.ncsu.csc.itrust2.models.enums.TransactionType;
+import edu.ncsu.csc.itrust2.models.persistent.LoginAttempt;
 import edu.ncsu.csc.itrust2.models.persistent.LoginBan;
 import edu.ncsu.csc.itrust2.models.persistent.LoginLockout;
-import edu.ncsu.csc.itrust2.models.persistent.LoginAttempt;
+import edu.ncsu.csc.itrust2.models.persistent.Patient;
+import edu.ncsu.csc.itrust2.models.persistent.Personnel;
 import edu.ncsu.csc.itrust2.models.persistent.User;
+import edu.ncsu.csc.itrust2.utils.EmailUtil;
 import edu.ncsu.csc.itrust2.utils.LoggerUtil;
 
 /**
@@ -93,6 +97,9 @@ public class FailureHandler extends SimpleUrlAuthenticationFailureHandler {
                         ban.setUser( user );
                         ban.save();
                         LoggerUtil.log( TransactionType.USER_BANNED, username, null, username + " has been banned." );
+
+                        sendLockoutEmail( user, true );
+
                         this.getRedirectStrategy().sendRedirect( request, response, "/login?banned" );
                     }
                     else {
@@ -103,6 +110,9 @@ public class FailureHandler extends SimpleUrlAuthenticationFailureHandler {
                         lock.save();
                         LoggerUtil.log( TransactionType.USER_LOCKOUT, username, null,
                                 username + " has been locked out for 1 hour." );
+
+                        sendLockoutEmail( user, false );
+
                         this.getRedirectStrategy().sendRedirect( request, response, "/login?locked" );
                     }
                     return;
@@ -140,4 +150,40 @@ public class FailureHandler extends SimpleUrlAuthenticationFailureHandler {
         this.getRedirectStrategy().sendRedirect( request, response, "/login?error" );
     }
 
+    /**
+     * Sends the lockout/ban email to users
+     *
+     * @param user
+     *            the user to send the email to
+     * @param isBanned
+     *            true if the user has been banned, false if locked out
+     */
+    private void sendLockoutEmail ( final User user, final boolean isBanned ) {
+        try {
+            final String userEmail = EmailUtil.getUserEmail( user );
+            if ( userEmail == null ) {
+                LoggerUtil.log( TransactionType.EMAIL_NOT_SENT, user.getUsername(), null, "Unable to send email to "
+                        + user.getUsername() + " for " + ( isBanned ? "ban" : "lockout" ) + " notification." );
+            }
+            else {
+                final Patient pat = Patient.getPatient( user );
+                final Personnel per = Personnel.getByName( user );
+                final String firstName = pat != null ? pat.getFirstName() : per.getFirstName();
+
+                String body = "Hello " + firstName + ",\n\nYour account has been ";
+                body += ( isBanned
+                        ? "banned due to your 3 lockouts. Please contact a system administrator to regain access to the system."
+                        : "locked out due to your 3 failed login attempts. Please wait an hour before attempting to login again." );
+                body += "\n\n--The iTrust2 Team";
+
+                EmailUtil.sendEmail( userEmail, "iTrust2 Account " + ( isBanned ? "Ban" : "Lockout" ), body );
+                LoggerUtil.log( TransactionType.EMAIL_ACCOUNT_LOCKOUT, user.getUsername(), null,
+                        "Email sent to " + userEmail + " for " + ( isBanned ? "ban" : "lockout" ) + " notification." );
+            }
+        }
+        catch ( final MessagingException e ) {
+            LoggerUtil.log( TransactionType.EMAIL_NOT_SENT, user.getUsername(), null, "Unable to send email to "
+                    + user.getUsername() + " for " + ( isBanned ? "ban" : "lockout" ) + " notification." );
+        }
+    }
 }

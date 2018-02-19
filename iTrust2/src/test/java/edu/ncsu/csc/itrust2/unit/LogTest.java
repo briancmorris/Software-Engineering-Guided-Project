@@ -46,7 +46,12 @@ public class LogTest {
         assertEquals( 1, hcpEntries );
 
         hcpEntries = LoggerUtil.getTopForUser( "logHcp", 10 ).size();
-        assertEquals( 1, hcpEntries - initialHCPEntries );
+        if ( hcpEntries < 10 ) {
+            assertEquals( 1, hcpEntries - initialHCPEntries );
+        }
+        else {
+            assertEquals( 10 - initialHCPEntries, hcpEntries - initialHCPEntries );
+        }
 
         // Now test similar methods for LogEntry
         hcpEntries = LogEntry.getAllForUser( "logHcp" ).size();

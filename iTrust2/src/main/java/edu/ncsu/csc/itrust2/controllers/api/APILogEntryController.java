@@ -77,4 +77,22 @@ public class APILogEntryController extends APIController {
         return entries;
     }
 
+    /**
+     * Retrieves and returns the log entries for the currently logged in user
+     * for a start and end time
+     *
+     * @param startDate
+     *            start date of the log entries
+     * @param endDate
+     *            end date of the log entries
+     * @return log entries for a time period
+     */
+    @GetMapping ( BASE_PATH + "/logentries/{startDate}/{endDate}" )
+    public List<LogEntry> getDateLogEntries ( @PathVariable ( "startDate" ) final String startDate,
+            @PathVariable ( "endDate" ) final String endDate ) {
+        final String user = LoggerUtil.currentUser();
+        final List<LogEntry> entries = LoggerUtil.getAllByDates( user, startDate, endDate );
+        return entries;
+    }
+
 }

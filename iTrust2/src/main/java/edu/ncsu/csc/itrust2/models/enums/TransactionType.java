@@ -146,6 +146,39 @@ public enum TransactionType {
     OFFICE_VISIT_DELETE ( 811, "Office visit deleted", true ),
 
     /**
+     * Admin created a new drug
+     */
+    DRUG_CREATE ( 900, "Admin created a new drug", true ),
+    /**
+     * Admin edited an existing drug
+     */
+    DRUG_EDIT ( 901, "Admin edited an existing drug", true ),
+    /**
+     * Admin deleted an existing drug
+     */
+    DRUG_DELETE ( 902, "Admin deleted an existing drug", true ),
+    /**
+     * Admin views all drugs in the system
+     */
+    DRUG_VIEW ( 903, "Admin views all drugs in the system", true ),
+    /**
+     * HCP created a new prescription
+     */
+    PRESCRIPTION_CREATE ( 910, "HCP created a new prescription", true ),
+    /**
+     * HCP edited an existing prescription
+     */
+    PRESCRIPTION_EDIT ( 911, "HCP edited an existing prescription", true ),
+    /**
+     * HCP deleted an existing prescription
+     */
+    PRESCRIPTION_DELETE ( 912, "HCP deleted an existing prescription", true ),
+    /**
+     * User viewed an existing prescription
+     */
+    PRESCRIPTION_VIEW ( 913, "User viewed an existing prescription", true ),
+
+    /**
      * Admin adds an ICD-10 code
      */
     ICD_CREATE ( 1001, "Admin adds ICD-10 code", false ),
@@ -189,41 +222,7 @@ public enum TransactionType {
      * HCP deletes diagnosis
      */
     DIAGNOSIS_DELETE ( 1011, "HCP deletes diagnosis", true ),
-
-    /**
-     * Admin created a new drug
-     */
-    DRUG_CREATE ( 900, "Admin created a new drug", true ),
-    /**
-     * Admin edited an existing drug
-     */
-    DRUG_EDIT ( 901, "Admin edited an existing drug", true ),
-    /**
-     * Admin deleted an existing drug
-     */
-    DRUG_DELETE ( 902, "Admin deleted an existing drug", true ),
-    /**
-     * Admin views all drugs in the system
-     */
-    DRUG_VIEW ( 903, "Admin views all drugs in the system", true ),
-
-    /**
-     * HCP created a new prescription
-     */
-    PRESCRIPTION_CREATE ( 910, "HCP created a new prescription", true ),
-    /**
-     * HCP edited an existing prescription
-     */
-    PRESCRIPTION_EDIT ( 911, "HCP edited an existing prescription", true ),
-    /**
-     * HCP deleted an existing prescription
-     */
-    PRESCRIPTION_DELETE ( 912, "HCP deleted an existing prescription", true ),
-    /**
-     * User viewed an existing prescription
-     */
-    PRESCRIPTION_VIEW ( 913, "User viewed an existing prescription", true ),
-
+    
     /**
      * Attempt to update password fails
      */
@@ -247,10 +246,27 @@ public enum TransactionType {
      */
     PATIENT_DEMOGRAPHICS_EDIT ( 1201, "HCP edits patient's demographics", true ),
 
-    /**
+    /** 
      * User views access logs.
      */
-    VIEW_ACCESS_LOGS ( 1301, "Log events viewed", true );
+    VIEW_ACCESS_LOGS ( 1301, "Log events viewed", true ),
+  
+    /**
+     * Email sent to user after changing password
+     */
+    EMAIL_PASSWORD_CHANGE ( 1401, "Password change email sent", true ),
+    /**
+     * Email sent to patient after hcp accepts/rejects appointment request
+     */
+    EMAIL_APPOINTMENT_STATUS ( 1402, "Email sent about appointment request status update", true ),
+    /**
+     * Email sent to user after their account is locked out
+     */
+    EMAIL_ACCOUNT_LOCKOUT ( 1403, "Email sent to locked out user", true ),
+    /**
+     * Email could not be sent due to missing email
+     */
+    EMAIL_NOT_SENT ( 1404, "Email could not be sent due to missing email", true );
 
     /**
      * Creates a TransactionType for logging events

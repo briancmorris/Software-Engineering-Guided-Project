@@ -1,8 +1,11 @@
 package edu.ncsu.csc.itrust2.utils;
 
+import java.io.File;
+import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.io.InputStream;
 import java.util.Properties;
+import java.util.Scanner;
 
 import javax.mail.Authenticator;
 import javax.mail.Message;
@@ -12,6 +15,10 @@ import javax.mail.Session;
 import javax.mail.Transport;
 import javax.mail.internet.InternetAddress;
 import javax.mail.internet.MimeMessage;
+
+import edu.ncsu.csc.itrust2.models.persistent.Patient;
+import edu.ncsu.csc.itrust2.models.persistent.Personnel;
+import edu.ncsu.csc.itrust2.models.persistent.User;
 
 /**
  * Class for sending email. Used for the Password Reset emails.
@@ -24,7 +31,7 @@ public class EmailUtil {
     /**
      * Send an email from the email account in the system's `email.properties`
      * file
-     * 
+     *
      * @param addr
      *            Address to send to
      * @param subject
@@ -45,22 +52,46 @@ public class EmailUtil {
         final String password;
         final String host;
 
-        final Properties properties = new Properties();
+        final File emailFile;
+        final String emailPath = System.getProperty( "user.dir" ) + "/src/main/java/email.properties";
+        Scanner emailScan = null;
 
-        final String filename = "email.properties";
-        input = DBUtil.class.getClassLoader().getResourceAsStream( filename );
-        if ( null != input ) {
-            try {
-                properties.load( input );
-            }
-            catch ( final IOException e ) {
-                e.printStackTrace();
-            }
+        try {
+            emailFile = new File( emailPath );
+            emailScan = new Scanner( emailFile );
         }
-        from = properties.getProperty( "from" );
-        username = properties.getProperty( "username" );
-        password = properties.getProperty( "password" );
-        host = properties.getProperty( "host" );
+        catch ( final FileNotFoundException fnfe ) {
+            emailScan = null;
+        }
+
+        if ( null != emailScan ) {
+            emailScan.next(); // from
+            from = emailScan.next();
+            emailScan.next(); // username
+            username = emailScan.next();
+            emailScan.next(); // password
+            password = emailScan.next();
+            emailScan.next(); // host
+            host = emailScan.next();
+            emailScan.close();
+        }
+        else {
+            final Properties properties = new Properties();
+            final String filename = "email.properties";
+            input = DBUtil.class.getClassLoader().getResourceAsStream( filename );
+            if ( null != input ) {
+                try {
+                    properties.load( input );
+                }
+                catch ( final IOException e ) {
+                    e.printStackTrace();
+                }
+            }
+            from = properties.getProperty( "from" );
+            username = properties.getProperty( "username" );
+            password = properties.getProperty( "password" );
+            host = properties.getProperty( "host" );
+        }
 
         /*
          * Source for java mail code:
@@ -93,6 +124,31 @@ public class EmailUtil {
             e.printStackTrace();
             throw e;
         }
+    }
+
+    /**
+     * Takes a user and returns their email after correctly typing them as
+     * either a patient or personnel
+     *
+     * @param user
+     *            the user whose email needs to be found
+     * @return the user's email or null if it could not be found
+     */
+    public static String getUserEmail ( final User user ) {
+        if ( user == null ) {
+            return null;
+        }
+
+        final Patient pat = Patient.getPatient( user.getUsername() );
+        final Personnel per = Personnel.getByName( user.getUsername() );
+        if ( null != pat ) {
+            return pat.getEmail();
+        }
+        if ( null != per ) {
+            return per.getEmail();
+        }
+
+        return null;
     }
 
 }

@@ -16,7 +16,6 @@ import javax.mail.Transport;
 import javax.mail.internet.InternetAddress;
 import javax.mail.internet.MimeMessage;
 
-import edu.ncsu.csc.itrust2.models.enums.Role;
 import edu.ncsu.csc.itrust2.models.persistent.Patient;
 import edu.ncsu.csc.itrust2.models.persistent.Personnel;
 import edu.ncsu.csc.itrust2.models.persistent.User;
@@ -54,10 +53,11 @@ public class EmailUtil {
         final String host;
 
         final File emailFile;
+        final String emailPath = System.getProperty( "user.dir" ) + "/src/main/java/email.properties";
         Scanner emailScan = null;
 
         try {
-            emailFile = new File( "/src/main/java/email.properties" );
+            emailFile = new File( emailPath );
             emailScan = new Scanner( emailFile );
         }
         catch ( final FileNotFoundException fnfe ) {
@@ -132,27 +132,23 @@ public class EmailUtil {
      *
      * @param user
      *            the user whose email needs to be found
-     * @return the user's email
+     * @return the user's email or null if it could not be found
      */
     public static String getUserEmail ( final User user ) {
-        if ( user == null || user.getRole() == null ) {
-            throw new IllegalArgumentException( "Null user or role." );
+        if ( user == null ) {
+            return null;
         }
 
-        if ( user.getRole() == Role.ROLE_PATIENT ) {
-            final Patient pat = Patient.getPatient( user );
-            if ( pat == null ) {
-                throw new IllegalArgumentException( "Null user or role." );
-            }
+        final Patient pat = Patient.getPatient( user.getUsername() );
+        final Personnel per = Personnel.getByName( user.getUsername() );
+        if ( null != pat ) {
             return pat.getEmail();
         }
-        else {
-            final Personnel per = Personnel.getByName( user );
-            if ( per == null ) {
-                throw new IllegalArgumentException( "Null user or role." );
-            }
+        if ( null != per ) {
             return per.getEmail();
         }
+
+        return null;
     }
 
 }

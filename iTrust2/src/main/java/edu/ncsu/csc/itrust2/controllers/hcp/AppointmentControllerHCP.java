@@ -111,7 +111,7 @@ public class AppointmentControllerHCP {
                 String body = "Hello " + Patient.getPatient( patient ).getFirstName();
                 body += ",\n\nYour appointment request has been " + ( isDenied ? "denied" : "approved" );
                 body += ". Please check your iTrust2 account for more information.";
-                body += "\n\nThank you,\nThe iTrust2 Team";
+                body += "\n\n--The iTrust2 Team";
 
                 EmailUtil.sendEmail( userEmail, "Appointment Status Update", body );
 

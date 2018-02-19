@@ -100,7 +100,7 @@ public class APIPasswordController extends APIController {
             else {
                 String body = "Hello " + user.getUsername() + ",\n\nYour password has been successfully changed. ";
                 body += "If you did not change your password, please contact an administrator immediately.";
-                body += "\n\n--iTrust2 Admin";
+                body += "\n\n--The iTrust2 Team";
 
                 EmailUtil.sendEmail( userEmail, "iTrust2 Password Change", body );
                 LoggerUtil.log( TransactionType.EMAIL_PASSWORD_CHANGE, user.getUsername(), null,

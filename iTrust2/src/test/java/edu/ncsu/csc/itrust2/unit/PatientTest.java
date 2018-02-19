@@ -25,9 +25,82 @@ import edu.ncsu.csc.itrust2.models.persistent.User;
  * Unit tests for the Patient class
  *
  * @author jshore
+ * @author plgiroua
  *
  */
 public class PatientTest {
+
+    /**
+     * Tests the bug found in the setEmail method of patient
+     *
+     * @throws ParseException
+     */
+    @Test
+    public void testSetEmail () throws ParseException {
+        final User patient = new User( "patientTestPatient", "123456", Role.ROLE_PATIENT, 1 );
+        patient.save();
+        final User mom = new User( "patientTestMom", "123456", Role.ROLE_PATIENT, 1 );
+        mom.save();
+        final User dad = new User( "patientTestDad", "123456", Role.ROLE_PATIENT, 1 );
+        dad.save();
+        final PatientForm form = new PatientForm();
+        form.setMother( mom.getUsername() );
+        form.setFather( dad.getUsername() );
+        form.setFirstName( "patient" );
+        form.setPreferredName( "patient" );
+        form.setLastName( "mcpatientface" );
+        form.setEmail( "bademail@ncsu.edu" );
+        form.setAddress1( "Some town" );
+        form.setAddress2( "Somewhere" );
+        form.setCity( "placecity" );
+        form.setState( State.AL.getName() );
+        form.setZip( "27606" );
+        form.setPhone( "111-111-1111" );
+        form.setDateOfBirth( "01/01/1901" );
+        form.setDateOfDeath( "01/01/2001" );
+        form.setCauseOfDeath( "Hit by a truck" );
+        form.setBloodType( BloodType.ABPos.getName() );
+        form.setEthnicity( Ethnicity.Asian.getName() );
+        form.setGender( Gender.Male.getName() );
+        form.setSelf( patient.getUsername() );
+
+        final Patient testPatient = new Patient( form );
+        testPatient.save();
+
+        try {
+            // try to set null email
+            testPatient.setEmail( null );
+            fail();
+        }
+        catch ( final IllegalArgumentException e ) {
+            assertEquals( "bademail@ncsu.edu", testPatient.getEmail() );
+        }
+
+        try {
+            // try to set email of excessive length
+            testPatient.setEmail( "12345678901234567890123456789012345678901" );
+            fail();
+        }
+        catch ( final IllegalArgumentException e ) {
+            assertEquals( "bademail@ncsu.edu", testPatient.getEmail() );
+        }
+
+        try {
+            // try to set email with special characters
+            testPatient.setEmail( "my!email#it@dontwork.com" );
+            fail();
+        }
+        catch ( final IllegalArgumentException e ) {
+            assertEquals( "bademail@ncsu.edu", testPatient.getEmail() );
+        }
+
+        testPatient.setEmail( "under_score@gmail.com" );
+        assertEquals( "under_score@gmail.com", testPatient.getEmail() );
+
+        testPatient.setEmail( "me@me.com" );
+        assertEquals( "me@me.com", testPatient.getEmail() );
+
+    }
 
     /**
      * Creates a patient from a patient form with both date and cause of death.

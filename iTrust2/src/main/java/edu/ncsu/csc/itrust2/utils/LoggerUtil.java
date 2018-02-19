@@ -100,6 +100,21 @@ public class LoggerUtil {
     }
 
     /**
+     * Retrieve all of the Log Entries for a given user
+     *
+     * @param user
+     *            The User to retrieve log entries for
+     * @param startDate
+     *            the start date for logs
+     * @param endDate
+     *            the end date for logs
+     * @return The List of Log Entries that was found
+     */
+    static public List<LogEntry> getAllByDates ( final String user, final String startDate, final String endDate ) {
+        return LogEntry.getAllByDates( user, startDate, endDate );
+    }
+
+    /**
      * Get the top logged events for a single user specified by name.
      *
      * @param user

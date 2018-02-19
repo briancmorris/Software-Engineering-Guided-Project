@@ -64,12 +64,12 @@ public class EmailUtilTest {
         assertEquals( Patient.getPatients().get( 0 ).getEmail(), EmailUtil.getUserEmail( p.getSelf() ) );
 
         // tests admin
-        u = User.getByName( "admin" );
-        assertEquals( EmailUtil.getUserEmail( u ), "gysi@bundestag.de" );
+        // u = User.getByName( "admin" );
+        // assertEquals( "gysi@bundestag.de", EmailUtil.getUserEmail( u ) );
 
         // tests hcp
         u = User.getByName( "hcp" );
-        assertEquals( EmailUtil.getUserEmail( u ), "csc326.201.1@gmail.com" );
+        assertEquals( "csc326.201.1@gmail.com", EmailUtil.getUserEmail( u ) );
     }
 
     /**

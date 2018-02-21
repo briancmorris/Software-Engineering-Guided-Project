@@ -10,17 +10,12 @@
 	<div th:fragment="content">
 		<script th:inline="javascript">
 		/*<![CDATA[*/
-			// Create app to control webpage.
-			var app = angular.module('tableApp', []);
-
-			// Controller for app.
-			app.controller('tableCtrl', function($http, $scope) {
-				// Entries list.
-				$scope.entries = [];
-				// Load the table.
+			var app = angular.module("tableApp", []);
+			app.controller('tableCtrl', function($scope, $http) {
+				$scope.codes = [];
 				$scope.loadTable = function() {
-					// Get entries from rest API.
-					$http.get("/api/v1/logentries/userAll").then(
+					// get list of icd codes from rest api
+					$http.get("/iTrust2/api/v1/logentries/userAll").then(
 							function(response) {
 								$scope.entries = response.data;
 								$scope.message = "";
@@ -28,29 +23,41 @@
 								$scope.entries = [];
 								$scope.message = "Could not display log entries.";
 							});
-				}
-				// Load table on landing.
+				}			
+				
+				// load table upon page loading
 				$scope.loadTable();
-		/*]]>*/
+			});
+			/*]]>*/
 		</script>
 
-		<div ng-app="tableApp" ng-controller="tableCtrl">
+		<form>
+			<h3>Filter by Date</h3>
+			<div class="dateSelectors">
+				<label for="startDate">Enter a starting date:</label>
+				<input type="date" id="startDate" name="startDate" required pattern="[0-9]{4}-[0-9]{2}-[0-9]{2}">
+				<label for="endDate">Enter an ending date:</label>
+				<input type="date" id="endDate" name="endDate" required pattern="[0-9]{4}-[0-9]{2}-[0-9]{2}">
+				<span class="validity"></span>
+			</div>
+			<div>
+				<input type="submit" name="dateFilter" value="Filter by Date">
+			</div>
+		</form>
+
+		<div ng-app="tableApp" ng-controller="tableCtrl">	
 			<h4 style="color:red" ng-model="message"></h4>
-			<h1>Log Entries:</h1>
-				<table class="table" style="width:100%">
-					<tr style="vertical-align: top">
-						<th>Name of Accessor</th>
-						<th>Role of Accessor</th>
-						<th>Date and Time of Access</th>
-						<th>Transaction Type</th>
-					</tr>
-					<tr name="entryRow" ng-repeat="e in entries" style="vertical-align: top">
-						<td name="accessorCell">{{e.primaryUser}}</td>
-						<td name="roleCell">{{e.primaryUser}}</td>
-						<td name="dateCell">{{e.date}}</td>
-						<td name="typeCell">{{e.logCode}}</td>
-					</tr>
-				</table>
+			<h1>Log Entries</h1>
+			<table class="table" style="width:100%">
+				<tr style="vertical-align: top">
+					<th>ICD-10 Code</th>
+					<th>Description</th>
+				</tr>
+				<tr name="entryRow" style="vertical-align: top" ng-repeat="e in entries">
+					<td name="codeCell">{{e.logCode}}</td>
+					<td name="primaryUserCell">{{e.primaryUser}}</td>
+				</tr>
+			</table>
 		</div>
 	</div>
 </body>

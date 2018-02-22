@@ -65,12 +65,19 @@
 			<h1>Log Entries</h1>
 			<table class="table" style="width:100%">
 				<tr style="vertical-align: top">
-					<th>ICD-10 Code</th>
-					<th>Description</th>
+					<th>Transaction Code</th>
+					<th>Primary User</th>
+					<th>Secondary User</th>
+					<th>Role of Secondary User </th>
+					<th> Date & Time </th>
 				</tr>
 				<tr name="entryRow" style="vertical-align: top" ng-repeat="e in entries">
 					<td name="codeCell">{{e.logCode}}</td>
 					<td name="primaryUserCell">{{e.primaryUser}}</td>
+					<td name="secondaryUserCell">{{e.secondaryUser}}</td>
+					<td name="roleCell">{{e.message}}</td>
+					<td name="dateCell">{{e.time.year}}/{{e.time.month}}/{{e.time.dayOfMonth}} 
+						{{e.time.hourOfDay}}:{{e.time.minute}}:{{e.time.second}}</td>
 				</tr>
 			</table>
 		</div>

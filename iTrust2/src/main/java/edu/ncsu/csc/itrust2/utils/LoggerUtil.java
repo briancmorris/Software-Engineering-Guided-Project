@@ -1,5 +1,6 @@
 package edu.ncsu.csc.itrust2.utils;
 
+import java.util.Collections;
 import java.util.Comparator;
 import java.util.List;
 
@@ -146,6 +147,40 @@ public class LoggerUtil {
     }
 
     /**
+     * Get the top logged events for a single user specified by name.
+     *
+     * @param user
+     *            User to find LogEntries for
+     * @param top
+     *            Number of events to find
+     * @return A List of the LogEntry Entries for the user. If the number of
+     *         Entries is less than `top`, returns all
+     */
+    static public List<LogEntry> getBottomForUser ( final String user, final Integer top ) {
+        final List<LogEntry> all = getAllForUser( user );
+        all.sort( new Comparator<Object>() {
+            @Override
+            public int compare ( final Object arg0, final Object arg1 ) {
+                return ( (LogEntry) arg0 ).getTime().compareTo( ( (LogEntry) arg1 ).getTime() );
+            }
+
+        } );
+        try {
+            final int length = all.size();
+            final List reverse = all.subList( length - 10, length );
+            Collections.reverse( reverse );
+            return reverse;
+        }
+        catch ( final IndexOutOfBoundsException e ) { /*
+                                                       * If num < top (ie, fewer
+                                                       * records exist than were
+                                                       * requested) return all
+                                                       */
+            return all;
+        }
+    }
+
+    /**
      * Log an event
      *
      * @param code
@@ -173,4 +208,5 @@ public class LoggerUtil {
             return "SPRING_API_TEST_USER"; // API tests have no explicit user
         }
     }
+
 }

@@ -30,12 +30,10 @@
 				
 				// Filter the log entries by date on form submit.
 				$scope.filterByDate = function() {
-					var startDate = angular.element(document.querySelector( "startDate" )).val();
-					var endDate = angular.element(document.querySelector( "endDate" )).val();
-					console.log(startDate);
-					console.log(endDate);
+					console.log($scope.startDate);
+					console.log($scope.endDate);
 					
-					$http.get("/iTrust2/api/v1/logentries/" + startDate + "/" + endDate).then(
+					$http.get("/iTrust2/api/v1/logentries/" + formattedStartDate + "/" + formattedEndDate).then(
 							function(response) {
 								$scope.entries = response.data;
 								$scope.message = "";
@@ -52,9 +50,9 @@
 			<h3>Filter by Date</h3>
 			<div class="dateSelectors">
 				<label for="startDate">Enter a starting date:</label>
-				<input ng-bind="startDate" type="date" id="startDate" name="startDate" required pattern="[0-9]{4}-[0-9]{2}-[0-9]{2}">
+				<input type="date" id="startDate" name="startDate" ng-model="startDate" placeholder="yyyy-MM-dd">
 				<label for="endDate">Enter an ending date:</label>
-				<input ng-bind="endDate" type="date" id="endDate" name="endDate" required pattern="[0-9]{4}-[0-9]{2}-[0-9]{2}">
+				<input type="date" id="endDate" name="endDate" ng-model="endDate" placeholder="yyyy-MM-dd">
 				<span class="validity"></span>
 				<input type="submit" name="dateFilter" value="Filter by Date">
 			</div>

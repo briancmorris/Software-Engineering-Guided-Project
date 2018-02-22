@@ -133,14 +133,30 @@ public class LogEntry extends DomainObject<LogEntry> {
      */
     public static List<LogEntry> getAllByDates ( final String user, final String startDate, final String endDate ) {
         // Parse the start string for year, month, and day.
-        final int startYear = Integer.parseInt( startDate.substring( 0, 4 ) );
-        final int startMonth = Integer.parseInt( startDate.substring( 4, 6 ) );
-        final int startDay = Integer.parseInt( startDate.substring( 6, startDate.length() ) );
+        final String[] startDateArray = startDate.split( "-" );
+        final int startYear = Integer.parseInt( startDateArray[0] );
+        final int startMonth = Integer.parseInt( startDateArray[1] );
+        final int startDay = Integer.parseInt( startDateArray[2] );
 
         // Parse the end string for year, month, and day.
-        final int endYear = Integer.parseInt( endDate.substring( 0, 4 ) );
-        final int endMonth = Integer.parseInt( endDate.substring( 4, 6 ) );
-        final int endDay = Integer.parseInt( endDate.substring( 6, endDate.length() ) );
+        final String[] endDateArray = endDate.split( "-" );
+        final int endYear = Integer.parseInt( endDateArray[0] );
+        final int endMonth = Integer.parseInt( endDateArray[1] );
+        final int endDay = Integer.parseInt( endDateArray[2] );
+
+        // Check that the bounds of the dates are valid.
+        if ( startYear > endYear ) {
+            // Invalid year, return empty list.
+            return new ArrayList<LogEntry>();
+        }
+        else if ( startMonth > endMonth ) {
+            // Invalid month, return empty list.
+            return new ArrayList<LogEntry>();
+        }
+        else if ( startDay > endDay ) {
+            // Invalid day, return empty list.
+            return new ArrayList<LogEntry>();
+        }
 
         // Get all the log entries for the currently logged in users.
         final List<LogEntry> all = LoggerUtil.getAllForUser( user );
@@ -160,9 +176,9 @@ public class LogEntry extends DomainObject<LogEntry> {
             final int eDay = eTime.get( Calendar.DAY_OF_MONTH );
 
             // Compare values of e's date to the given date range.
-            if ( startYear <= endYear && eYear >= startYear && eYear <= endYear ) {
-                if ( startMonth <= endMonth && eMonth >= startMonth && eMonth <= endMonth ) {
-                    if ( startDay <= endDay && eDay >= startDay && eDay <= endDay ) {
+            if ( eYear >= startYear && eYear <= endYear ) {
+                if ( eMonth >= startMonth && eMonth <= endMonth ) {
+                    if ( eDay >= startDay && eDay <= endDay ) {
                         dateEntries.add( e );
                     }
                 }

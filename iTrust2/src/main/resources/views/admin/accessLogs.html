@@ -7,7 +7,7 @@
 </head>
 
 <body th:include="layout :: body" th:with="content=~{::content}">
-	<div th:fragment="content">
+	<div th:fragment="content" ng-app="tableApp" ng-controller="tableCtrl">
 		<script th:inline="javascript">
 		/*<![CDATA[*/
 			var app = angular.module("tableApp", []);
@@ -16,36 +16,50 @@
 				$scope.loadTable = function() {
 					// get list of icd codes from rest api
 					$http.get("/iTrust2/api/v1/logentries/userAll").then(
+						function(response) {
+							$scope.entries = response.data;
+							$scope.message = "";
+						}, function(rejection) {
+							$scope.entries = [];
+							$scope.message = "Could not display log entries.";
+						}
+					);
+				}			
+				// load table upon page loading
+				$scope.loadTable();
+				
+				// Filter the log entries by date on form submit.
+				$scope.filterByDate = function() {
+					var startDate = angular.element(document.querySelector( "startDate" )).val();
+					var endDate = angular.element(document.querySelector( "endDate" )).val();
+					
+					$http.get("/iTrust2/api/v1/logentries/" + startDate + "/" + endDate).then(
 							function(response) {
 								$scope.entries = response.data;
 								$scope.message = "";
 							}, function(rejection) {
 								$scope.entries = [];
 								$scope.message = "Could not display log entries.";
-							});
-				}			
-				
-				// load table upon page loading
-				$scope.loadTable();
+							}
+					);
+				}
 			});
 			/*]]>*/
 		</script>
 
-		<form>
+		<form ng-submit="filterByDate()">
 			<h3>Filter by Date</h3>
 			<div class="dateSelectors">
 				<label for="startDate">Enter a starting date:</label>
-				<input type="date" id="startDate" name="startDate" required pattern="[0-9]{4}-[0-9]{2}-[0-9]{2}">
+				<input ng-bind="startDate" type="date" id="startDate" name="startDate" required pattern="[0-9]{4}-[0-9]{2}-[0-9]{2}">
 				<label for="endDate">Enter an ending date:</label>
-				<input type="date" id="endDate" name="endDate" required pattern="[0-9]{4}-[0-9]{2}-[0-9]{2}">
+				<input ng-bind="endDate" type="date" id="endDate" name="endDate" required pattern="[0-9]{4}-[0-9]{2}-[0-9]{2}">
 				<span class="validity"></span>
-			</div>
-			<div>
-				<input type="submit" name="dateFilter" value="Filter by Date">
+				<type="submit" name="dateFilter" value="Filter by Date">
 			</div>
 		</form>
 
-		<div ng-app="tableApp" ng-controller="tableCtrl">	
+		<div>	
 			<h4 style="color:red" ng-model="message"></h4>
 			<h1>Log Entries</h1>
 			<table class="table" style="width:100%">

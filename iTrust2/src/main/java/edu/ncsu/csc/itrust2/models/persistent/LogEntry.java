@@ -148,20 +148,16 @@ public class LogEntry extends DomainObject<LogEntry> {
         System.out.println( "Parsed startDate: " + startYear + " " + startMonth + " " + startDay );
         System.out.println( "Parsed endDate: " + endYear + " " + endMonth + " " + endDay );
 
-        // Check that the bounds of the dates are valid.
-        if ( startYear > endYear ) {
-            // Invalid year, return empty list.
-            System.out.println( "startYear > endYear" );
-            return new ArrayList<LogEntry>();
-        }
-        else if ( startYear == endYear && startMonth > endMonth ) {
-            System.out.println( "startMonth > endMonth" );
-            // Invalid month, return empty list.
-            return new ArrayList<LogEntry>();
-        }
-        else if ( startYear == endYear && startMonth == endMonth && startDay > endDay ) {
-            System.out.println( "startDay > endDay" );
-            // Invalid day, return empty list.
+        // Get calendar instances for start and end dates.
+        final Calendar start = Calendar.getInstance();
+        final Calendar end = Calendar.getInstance();
+
+        // Set their values to the corresponding start and end date.
+        start.set( startYear, startMonth, startDay );
+        end.set( endYear, endMonth, endDay );
+        // Check if the start date happens before the end date.
+        if ( !start.before( end ) && start.compareTo( end ) != 0 ) {
+            // Start is not before end, return empty list.
             return new ArrayList<LogEntry>();
         }
 

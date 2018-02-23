@@ -14,7 +14,7 @@
 			app.controller('tableCtrl', function($scope, $http) {
 				$scope.codes = [];
 				$scope.loadTable = function() {
-					// get list of icd codes from rest api
+					// Get list of entries from rest api.
 					$http.get("/iTrust2/api/v1/logentries/userAll").then(
 						function(response) {
 							$scope.entries = response.data;
@@ -32,7 +32,14 @@
 				$scope.filterByDate = function() {
 					console.log($scope.startDate);
 					console.log($scope.endDate);
+					console.log($scope.startDate instanceof Date);
 					
+					var formattedStartDate = "" + $scope.startDate.getFullYear() + "-" + $scope.startDate.getMonth() + "-" + $scope.startDate.getDate();
+					var formattedEndDate = "" + $scope.endDate.getFullYear() + "-" + $scope.endDate.getMonth() + "-" + $scope.endDate.getDate();
+					console.log(formattedStartDate);
+					console.log(formattedEndDate);
+					
+					// Get sorted date of entries from rest api.
 					$http.get("/iTrust2/api/v1/logentries/" + formattedStartDate + "/" + formattedEndDate).then(
 							function(response) {
 								$scope.entries = response.data;
@@ -50,9 +57,9 @@
 			<h3>Filter by Date</h3>
 			<div class="dateSelectors">
 				<label for="startDate">Enter a starting date:</label>
-				<input type="date" id="startDate" name="startDate" ng-model="startDate" placeholder="yyyy-MM-dd">
+				<input type="date" id="startDate" name="startDate" ng-model="startDate">
 				<label for="endDate">Enter an ending date:</label>
-				<input type="date" id="endDate" name="endDate" ng-model="endDate" placeholder="yyyy-MM-dd">
+				<input type="date" id="endDate" name="endDate" ng-model="endDate">
 				<span class="validity"></span>
 				<input type="submit" name="dateFilter" value="Filter by Date">
 			</div>

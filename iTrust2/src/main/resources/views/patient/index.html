@@ -50,7 +50,7 @@
 					<td name="userCell">{{c.primaryUser}}</td>
 					<td name="userCell">{{c.secondaryUser}}</td>
 					<td name="userCell">{{c.message}}</td>
-					<td name="dateCell">{{c.time.year}}/{{c.time.month}}/{{c.time.dayOfMonth}} 
+					<td name="dateCell">{{c.time.year}}/{{(c.time.month + 1)}}/{{c.time.dayOfMonth}} 
 						{{c.time.hourOfDay}}:{{(c.time.minute < 10?'0':'') + c.time.minute}}:{{(c.time.second < 10?'0':'') + c.time.second}}</td>
 				</tr>
 			</table>

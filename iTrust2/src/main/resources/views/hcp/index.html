@@ -48,7 +48,7 @@
 					<td name="userCell">{{c.logCode}}</td>
 					<td name="userCell">{{c.primaryUser}}</td>
 					<td name="dateCell">{{c.time.year}}/{{c.time.month}}/{{c.time.dayOfMonth}} 
-						{{c.time.hourOfDay}}:{{c.time.minute}}:{{c.time.second}}</td>
+						{{c.time.hourOfDay}}:{{(c.time.minute < 10?'0':'') + c.time.minute}}:{{(c.time.second < 10?'0':'') + c.time.second}}</td>
 				</tr>
 			</table>
 			<input type="button" value="View Logs on Seperate Page" onclick="/iTrust2/hcp/accessLogs" />

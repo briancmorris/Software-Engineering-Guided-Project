@@ -247,6 +247,7 @@ public class LogEntry extends DomainObject<LogEntry> {
      * @return Username of the secondary user
      */
     public String getSecondaryUser () {
+
         return secondaryUser;
     }
 
@@ -261,19 +262,19 @@ public class LogEntry extends DomainObject<LogEntry> {
     }
 
     /**
-     * Retrieves the optional Message on the LogEntry
+     * Retrieves the optional Role on the LogEntry
      *
-     * @return Any message present
+     * @return Any role of the user
      */
     public String getMessage () {
         return message;
     }
 
     /**
-     * Sets the optional Message on the LogEntry
+     * Sets the optional role on the log entry
      *
      * @param message
-     *            New Message to set
+     *            the role of the seconday
      */
     public void setMessage ( final String message ) {
         this.message = message;

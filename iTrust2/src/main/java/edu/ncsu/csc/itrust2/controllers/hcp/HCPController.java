@@ -51,4 +51,14 @@ public class HCPController {
         return "/hcp/editPrescriptions";
     }
 
+    /**
+     * Retrieves accessLogs page for a hcp.
+     *
+     * @return The page to display
+     */
+    @RequestMapping ( value = "hcp/accessLogs" )
+    @PreAuthorize ( "hasRole('ROLE_HCP')" )
+    public String accessLogs () {
+        return "admin/accessLogs";
+    }
 }

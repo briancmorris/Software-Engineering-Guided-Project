@@ -1,5 +1,7 @@
 package edu.ncsu.csc.itrust2.controllers.api;
 
+import java.util.ArrayList;
+import java.util.Comparator;
 import java.util.List;
 
 import org.springframework.http.HttpStatus;
@@ -8,6 +10,7 @@ import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RestController;
 
+import edu.ncsu.csc.itrust2.models.enums.Role;
 import edu.ncsu.csc.itrust2.models.enums.TransactionType;
 import edu.ncsu.csc.itrust2.models.persistent.LogEntry;
 import edu.ncsu.csc.itrust2.models.persistent.User;
@@ -96,27 +99,72 @@ public class APILogEntryController extends APIController {
     @GetMapping ( BASE_PATH + "/logentries/userAll" )
     public List<LogEntry> getAllLogEntriesForUser () {
         final String user = LoggerUtil.currentUser();
-        final List<LogEntry> entries = LoggerUtil.getAllForUser( user );
         LoggerUtil.log( TransactionType.VIEW_ACCESS_LOGS, user );
+        List<LogEntry> entries = LoggerUtil.getAllForUser( user );
+
+        // Check if the user is a patient.
+        final User loggedIn = User.getByName( user );
+        if ( loggedIn.getRole().getCode() == Role.ROLE_PATIENT.getCode() ) {
+            // User is a patient, make new list of only patient viewable
+            // entries.
+            final List<LogEntry> patientEntries = new ArrayList<LogEntry>();
+            for ( int i = 0; i < entries.size(); i++ ) {
+                final LogEntry e = entries.get( i );
+                if ( e.getLogCode().isPatientViewable() ) {
+                    patientEntries.add( e );
+                }
+            }
+            entries = patientEntries;
+        }
+
+        // Sort the list by date, newest first.
+        entries.sort( new Comparator<Object>() {
+            @Override
+            public int compare ( final Object arg0, final Object arg1 ) {
+                return ( (LogEntry) arg1 ).getTime().compareTo( ( (LogEntry) arg0 ).getTime() );
+            }
+        } );
         return entries;
     }
 
     /**
      * Retrieves and returns the log entries for the currently logged in user
-     * for a start and end time
+     * within the given start date and end date.
      *
      * @param startDate
-     *            start date of the log entries
+     *            start date of the log entries to retrieve
      * @param endDate
-     *            end date of the log entries
-     * @return log entries for a time period
+     *            end date of the log entries to retrieve
+     * @return log entries for the given time period
      */
     @GetMapping ( BASE_PATH + "/logentries/{startDate}/{endDate}" )
     public List<LogEntry> getDateLogEntries ( @PathVariable ( "startDate" ) final String startDate,
             @PathVariable ( "endDate" ) final String endDate ) {
         final String user = LoggerUtil.currentUser();
-        final List<LogEntry> entries = LoggerUtil.getAllByDates( user, startDate, endDate );
+        List<LogEntry> entries = LoggerUtil.getAllByDates( user, startDate, endDate );
+
+        // Check if the user is a patient.
+        final User loggedIn = User.getByName( user );
+        if ( loggedIn.getRole().getCode() == Role.ROLE_PATIENT.getCode() ) {
+            // User is a patient, make new list of only patient viewable
+            // entries.
+            final List<LogEntry> patientEntries = new ArrayList<LogEntry>();
+            for ( int i = 0; i < entries.size(); i++ ) {
+                final LogEntry e = entries.get( i );
+                if ( e.getLogCode().isPatientViewable() ) {
+                    patientEntries.add( e );
+                }
+            }
+            entries = patientEntries;
+        }
+
+        // Sort the list by date, newest first.
+        entries.sort( new Comparator<Object>() {
+            @Override
+            public int compare ( final Object arg0, final Object arg1 ) {
+                return ( (LogEntry) arg1 ).getTime().compareTo( ( (LogEntry) arg0 ).getTime() );
+            }
+        } );
         return entries;
     }
-
 }

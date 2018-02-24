@@ -1,5 +1,6 @@
 package edu.ncsu.csc.itrust2.cucumber;
 
+import static org.junit.Assert.assertTrue;
 import static org.junit.Assert.fail;
 
 import java.util.concurrent.TimeUnit;
@@ -18,6 +19,10 @@ import cucumber.api.java.en.And;
 import cucumber.api.java.en.Given;
 import cucumber.api.java.en.Then;
 import cucumber.api.java.en.When;
+import edu.ncsu.csc.itrust2.models.persistent.DomainObject;
+import edu.ncsu.csc.itrust2.models.persistent.LoginAttempt;
+import edu.ncsu.csc.itrust2.models.persistent.LoginBan;
+import edu.ncsu.csc.itrust2.models.persistent.LoginLockout;
 import edu.ncsu.csc.itrust2.utils.HibernateDataGenerator;
 import io.github.bonigarcia.wdm.ChromeDriverManager;
 
@@ -41,6 +46,10 @@ public class SendEmailStepDefs {
 
     @After
     public void tearDown () {
+        DomainObject.deleteAll( LoginAttempt.class );
+        DomainObject.deleteAll( LoginLockout.class );
+        DomainObject.deleteAll( LoginBan.class );
+        HibernateDataGenerator.refreshDB();
         driver.close();
         driver.quit();
     }
@@ -140,6 +149,67 @@ public class SendEmailStepDefs {
         driver.get( baseUrl + "/api/v1/logentries" );
         driver.getPageSource().contains( "{\"logCode\":\"EMAIL_NOT_SENT\",\"primaryUser\":\"" + user + "\" " );
         driver.getPageSource().contains( "{\"logCode\":\"PASSWORD_UPDATE_FAILURE\",\"primaryUser\":\"" + user + "\" " );
+    }
+
+    @Given ( "the user (.+) with password (.+) has no failed login attempts" )
+    public void clearAttempts ( final String username, final String correct ) {
+        // attempts cleared by logging in
+        driver.get( baseUrl );
+
+        wait.until( ExpectedConditions.visibilityOfElementLocated( By.name( "username" ) ) );
+
+        final WebElement usernameField = driver.findElement( By.name( "username" ) );
+        usernameField.clear();
+        usernameField.sendKeys( username );
+        final WebElement password = driver.findElement( By.name( "password" ) );
+        password.clear();
+        password.sendKeys( correct );
+        final WebElement submit = driver.findElement( By.className( "btn" ) );
+        submit.click();
+
+        wait.until( ExpectedConditions.visibilityOfElementLocated( By.id( "logout" ) ) );
+        driver.findElement( By.id( "logout" ) ).click();
+    }
+
+    @When ( "I attempt a login as (.+) with password (.+)" )
+    public void attemptLogin ( final String username, final String password ) {
+        driver.get( baseUrl );
+
+        wait.until( ExpectedConditions.visibilityOfElementLocated( By.name( "username" ) ) );
+
+        final WebElement usernameField = driver.findElement( By.name( "username" ) );
+        usernameField.clear();
+        usernameField.sendKeys( username );
+        final WebElement passwordField = driver.findElement( By.name( "password" ) );
+        passwordField.clear();
+        passwordField.sendKeys( password );
+        final WebElement submit = driver.findElement( By.className( "btn" ) );
+        submit.click();
+
+    }
+
+    @Then ( "my login attempt does not succeed" )
+    public void verifyIncorrectCredentials () {
+        wait.until( ExpectedConditions.visibilityOfElementLocated( By.className( "alert-error" ) ) );
+        assertTrue( driver.findElement( By.className( "alert-error" ) ).getText()
+                .contains( "Invalid username and password." ) );
+    }
+
+    @When ( "I attempt to login (.+) times as (.+) with password (.+)" )
+    public void login3Times ( final String n, final String username, final String password ) {
+        // n-1 b/c dont verify results of last login
+        for ( int i = 0; i < Integer.parseInt( n ) - 1; i++ ) {
+            attemptLogin( username, password );
+            verifyIncorrectCredentials();
+        }
+        attemptLogin( username, password );
+    }
+
+    @Then ( "my account is locked out for one hour" )
+    public void verifyAccountLocked () {
+        wait.until( ExpectedConditions.visibilityOfElementLocated( By.className( "alert-error" ) ) );
+        assertTrue( driver.findElement( By.className( "alert-error" ) ).getText()
+                .contains( "Too many invalid logins. Account locked for 1 hour." ) );
     }
 
 }

@@ -1,5 +1,6 @@
 #Author plgiroua
-Feature: Sending an email to users after password change/reset, appointment status is updated or account is locked out.
+Feature: Send email
+    Email to users after password change/reset, appointment status is updated or account is locked out.
 	I want the system to email users after a password change, appointment update or account lockout.
 	
 Scenario Outline: A logged-in user changes their password
@@ -46,3 +47,13 @@ Scenario Outline: A user fails to reset their password
 Examples:
     |username|
     |patient |
+    
+Scenario Outline: A user fails to login 3 times and receives a lockout email
+	Given the user <username> with password <correct> has no failed login attempts
+	When I attempt to login <n> times as <username> with password <password>
+	Then my account is locked out for one hour
+	And an email is sent to <username>
+	
+Examples:
+	|username|correct|password|n|
+	|hcp     |123456 |wrong   |3|

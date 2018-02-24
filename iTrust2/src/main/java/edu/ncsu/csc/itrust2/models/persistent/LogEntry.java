@@ -135,13 +135,13 @@ public class LogEntry extends DomainObject<LogEntry> {
         // Parse the start string for year, month, and day.
         final String[] startDateArray = startDate.split( "-" );
         final int startYear = Integer.parseInt( startDateArray[0] );
-        final int startMonth = Integer.parseInt( startDateArray[1] ) + 1;
+        final int startMonth = Integer.parseInt( startDateArray[1] );
         final int startDay = Integer.parseInt( startDateArray[2] );
 
         // Parse the end string for year, month, and day.
         final String[] endDateArray = endDate.split( "-" );
         final int endYear = Integer.parseInt( endDateArray[0] );
-        final int endMonth = Integer.parseInt( endDateArray[1] ) + 1;
+        final int endMonth = Integer.parseInt( endDateArray[1] );
         final int endDay = Integer.parseInt( endDateArray[2] );
 
         // Get calendar instances for start and end dates.

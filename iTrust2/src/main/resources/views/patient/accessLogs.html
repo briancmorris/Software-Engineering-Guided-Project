@@ -81,8 +81,8 @@
 					<td name="primaryUserCell">{{e.primaryUser}}</td>
 					<td name="secondaryUserCell">{{e.secondaryUser}}</td>
 					<td name="roleCell">{{e.message}}</td>
-					<td name="dateCell">{{e.time.year}}/{{e.time.month}}/{{e.time.dayOfMonth}} 
-						{{e.time.hourOfDay}}:{{e.time.minute}}:{{e.time.second}}</td>
+					<td name="dateCell">{{e.time.year}}/{{e.time.month}/{{e.time.dayOfMonth}} 
+						{{e.time.hourOfDay}}:{{(e.time.minute < 10?'0':'') + e.time.minute}}:{{(e.time.second < 10?'0':'') + e.time.second}}</td>
 				</tr>
 			</table>
 		</div>

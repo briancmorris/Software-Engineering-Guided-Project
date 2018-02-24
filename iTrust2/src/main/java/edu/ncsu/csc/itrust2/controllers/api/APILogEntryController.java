@@ -96,7 +96,6 @@ public class APILogEntryController extends APIController {
             else {
                 e.setMessage( User.getByName( primary ).getRole().toString() );
             }
-            // Add the entry to the list.
         }
 
         return entries;

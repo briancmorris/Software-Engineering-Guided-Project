@@ -133,7 +133,7 @@ public class PatientController {
     @RequestMapping ( value = "patient/accessLogs" )
     @PreAuthorize ( "hasRole('ROLE_PATIENT')" )
     public String accessLogs () {
-        return "admin/accessLogs";
+        return "patient/accessLogs";
     }
 
 }

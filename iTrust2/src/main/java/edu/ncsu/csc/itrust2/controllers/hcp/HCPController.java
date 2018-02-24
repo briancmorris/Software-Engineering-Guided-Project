@@ -59,6 +59,6 @@ public class HCPController {
     @RequestMapping ( value = "hcp/accessLogs" )
     @PreAuthorize ( "hasRole('ROLE_HCP')" )
     public String accessLogs () {
-        return "admin/accessLogs";
+        return "hcp/accessLogs";
     }
 }

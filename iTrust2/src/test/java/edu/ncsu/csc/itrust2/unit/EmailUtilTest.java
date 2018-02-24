@@ -63,7 +63,7 @@ public class EmailUtilTest {
 
         // tests hcp
         u = User.getByName( "hcp" );
-        assertEquals( "csc326s100x@gmail.com", EmailUtil.getUserEmail( u ) );
+        assertEquals( "csc326.201.1@gmail.com", EmailUtil.getUserEmail( u ) );
     }
 
     /**

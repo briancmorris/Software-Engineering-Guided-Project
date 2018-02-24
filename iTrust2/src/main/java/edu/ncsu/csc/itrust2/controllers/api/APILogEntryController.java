@@ -64,7 +64,30 @@ public class APILogEntryController extends APIController {
     @GetMapping ( BASE_PATH + "/logentries/user10" )
     public List<LogEntry> getTopTenLogEntriesForUser () {
         final String user = LoggerUtil.currentUser();
-        final List<LogEntry> entries = LoggerUtil.getTopForUser( user, new Integer( 10 ) );
+        final List<LogEntry> entries = LoggerUtil.getBottomForUser( user, new Integer( 10 ) );
+        return entries;
+    }
+
+    /**
+     * Retrieves and returns the top 10 log entries for the currently logged in
+     * user.
+     *
+     * @return response
+     */
+    @GetMapping ( BASE_PATH + "/logentries/patient10" )
+    public List<LogEntry> getTopTenPatientLogEntriesForUser () {
+        final String user = LoggerUtil.currentUser();
+        final List<LogEntry> entries = LoggerUtil.getBottomForPatient( user );
+        for ( int i = 0; i < entries.size(); i++ ) {
+            final String uName = entries.get( i ).getSecondaryUser();
+            entries.get( i ).setMessage( "" );
+            if ( uName != null ) {
+                final User u = User.getByName( uName );
+                final String role = u.getRole().toString();
+                entries.get( i ).setMessage( role );
+            }
+        }
+
         return entries;
     }
 

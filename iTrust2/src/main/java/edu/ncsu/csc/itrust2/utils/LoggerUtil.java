@@ -1,5 +1,7 @@
 package edu.ncsu.csc.itrust2.utils;
 
+import java.util.ArrayList;
+import java.util.Collections;
 import java.util.Comparator;
 import java.util.List;
 
@@ -146,6 +148,43 @@ public class LoggerUtil {
     }
 
     /**
+     * Get the top logged events for a single user specified by name.
+     *
+     * @param user
+     *            User to find LogEntries for
+     * @param top
+     *            Number of events to find
+     * @return A List of the LogEntry Entries for the user. If the number of
+     *         Entries is less than `top`, returns all
+     */
+    static public List<LogEntry> getBottomForUser ( final String user, final Integer top ) {
+        final List<LogEntry> all = getAllForUser( user );
+        all.sort( new Comparator<Object>() {
+            @Override
+            public int compare ( final Object arg0, final Object arg1 ) {
+                return ( (LogEntry) arg0 ).getTime().compareTo( ( (LogEntry) arg1 ).getTime() );
+            }
+
+        } );
+        try {
+            final int length = all.size();
+            final List<LogEntry> reverse = all.subList( length - 10, length );
+            Collections.reverse( reverse );
+            return reverse;
+        }
+        catch ( final IndexOutOfBoundsException e ) { /*
+                                                       * If num < top (ie, fewer
+                                                       * records exist than were
+                                                       * requested) return all
+                                                       */
+            final int length = all.size();
+            final List<LogEntry> reverse = all.subList( 0, length );
+            Collections.reverse( reverse );
+            return reverse;
+        }
+    }
+
+    /**
      * Log an event
      *
      * @param code
@@ -173,4 +212,32 @@ public class LoggerUtil {
             return "SPRING_API_TEST_USER"; // API tests have no explicit user
         }
     }
+
+    // method to get list of logs that are patient viewable
+    public static List<LogEntry> getBottomForPatient ( final String user ) {
+        // sorts the list of all logs for user
+        final List<LogEntry> all = getAllForUser( user );
+        all.sort( new Comparator<Object>() {
+            @Override
+            public int compare ( final Object arg0, final Object arg1 ) {
+                return ( (LogEntry) arg0 ).getTime().compareTo( ( (LogEntry) arg1 ).getTime() );
+            }
+
+        } );
+        Collections.reverse( all );
+
+        // creates a new list user that has log that are patient viewable
+        final List<LogEntry> view = new ArrayList<LogEntry>();
+        for ( int i = 0; i < all.size(); i++ ) {
+            if ( view.size() >= 10 ) {
+                return view;
+            }
+            if ( all.get( i ).getLogCode().isPatientViewable() ) {
+                view.add( all.get( i ) );
+            }
+        }
+
+        return view;
+    }
+
 }

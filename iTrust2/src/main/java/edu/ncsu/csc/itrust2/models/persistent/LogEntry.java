@@ -164,6 +164,7 @@ public class LogEntry extends DomainObject<LogEntry> {
         // Add 1 day to the end date. EXCLUSIVE boundary.
         end.add( Calendar.DATE, 1 );
 
+
         // Get all the log entries for the currently logged in users.
         final List<LogEntry> all = LoggerUtil.getAllForUser( user );
         // Create a new list to return.
@@ -173,6 +174,7 @@ public class LogEntry extends DomainObject<LogEntry> {
         for ( int i = 0; i < all.size(); i++ ) {
             // The current log entry being looked at in the all list.
             final LogEntry e = all.get( i );
+
             // Log entry's Calendar object.
             final Calendar eTime = e.getTime();
             // If eTime is after (or equal to) the start date and before the end
@@ -245,6 +247,7 @@ public class LogEntry extends DomainObject<LogEntry> {
      * @return Username of the secondary user
      */
     public String getSecondaryUser () {
+
         return secondaryUser;
     }
 
@@ -259,19 +262,19 @@ public class LogEntry extends DomainObject<LogEntry> {
     }
 
     /**
-     * Retrieves the optional Message on the LogEntry
+     * Retrieves the optional Role on the LogEntry
      *
-     * @return Any message present
+     * @return Any role of the user
      */
     public String getMessage () {
         return message;
     }
 
     /**
-     * Sets the optional Message on the LogEntry
+     * Sets the optional role on the log entry
      *
      * @param message
-     *            New Message to set
+     *            the role of the seconday
      */
     public void setMessage ( final String message ) {
         this.message = message;

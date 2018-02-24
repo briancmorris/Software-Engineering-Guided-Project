@@ -213,7 +213,14 @@ public class LoggerUtil {
         }
     }
 
-    // method to get list of logs that are patient viewable
+    /**
+     * Retrieves the bottom 10 entries for a patient in the database sorted by
+     * date.
+     * 
+     * @param user
+     *            the patient to get entries for
+     * @return the bottom 10 entries for the patient in the database
+     */
     public static List<LogEntry> getBottomForPatient ( final String user ) {
         // sorts the list of all logs for user
         final List<LogEntry> all = getAllForUser( user );

@@ -29,6 +29,7 @@ import edu.ncsu.csc.itrust2.models.persistent.Personnel;
 import edu.ncsu.csc.itrust2.models.persistent.User;
 import edu.ncsu.csc.itrust2.mvc.config.WebMvcConfiguration;
 import edu.ncsu.csc.itrust2.utils.EmailUtil;
+import edu.ncsu.csc.itrust2.utils.HibernateDataGenerator;
 
 @RunWith ( SpringJUnit4ClassRunner.class )
 @ContextConfiguration ( classes = { RootConfiguration.class, WebMvcConfiguration.class } )
@@ -59,13 +60,12 @@ public class EmailUtilTest {
         u = new User();
         assertNull( EmailUtil.getUserEmail( u ) );
 
-        // tests patient
-        final Patient p = Patient.getPatients().get( 0 );
-        assertEquals( Patient.getPatients().get( 0 ).getEmail(), EmailUtil.getUserEmail( p.getSelf() ) );
+        // makes several patients with valid emails
+        HibernateDataGenerator.generateTestFaculties();
 
-        // tests admin
-        // u = User.getByName( "admin" );
-        // assertEquals( "gysi@bundestag.de", EmailUtil.getUserEmail( u ) );
+        // tests patient
+        final Patient p = Patient.getPatient( "AliceThirteen" );
+        assertEquals( "csc326s100x@gmail.com", EmailUtil.getUserEmail( p.getSelf() ) );
 
         // tests hcp
         u = User.getByName( "hcp" );

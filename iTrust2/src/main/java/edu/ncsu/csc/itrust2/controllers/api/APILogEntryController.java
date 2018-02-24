@@ -10,6 +10,7 @@ import org.springframework.web.bind.annotation.RestController;
 
 import edu.ncsu.csc.itrust2.models.enums.TransactionType;
 import edu.ncsu.csc.itrust2.models.persistent.LogEntry;
+import edu.ncsu.csc.itrust2.models.persistent.User;
 import edu.ncsu.csc.itrust2.utils.LoggerUtil;
 
 /**
@@ -60,7 +61,30 @@ public class APILogEntryController extends APIController {
     @GetMapping ( BASE_PATH + "/logentries/user10" )
     public List<LogEntry> getTopTenLogEntriesForUser () {
         final String user = LoggerUtil.currentUser();
-        final List<LogEntry> entries = LoggerUtil.getTopForUser( user, new Integer( 10 ) );
+        final List<LogEntry> entries = LoggerUtil.getBottomForUser( user, new Integer( 10 ) );
+        return entries;
+    }
+
+    /**
+     * Retrieves and returns the top 10 log entries for the currently logged in
+     * user.
+     *
+     * @return response
+     */
+    @GetMapping ( BASE_PATH + "/logentries/patient10" )
+    public List<LogEntry> getTopTenPatientLogEntriesForUser () {
+        final String user = LoggerUtil.currentUser();
+        final List<LogEntry> entries = LoggerUtil.getBottomForPatient( user );
+        for ( int i = 0; i < entries.size(); i++ ) {
+            final String uName = entries.get( i ).getSecondaryUser();
+            entries.get( i ).setMessage( "" );
+            if ( uName != null ) {
+                final User u = User.getByName( uName );
+                final String role = u.getRole().toString();
+                entries.get( i ).setMessage( role );
+            }
+        }
+
         return entries;
     }
 
@@ -74,6 +98,24 @@ public class APILogEntryController extends APIController {
         final String user = LoggerUtil.currentUser();
         final List<LogEntry> entries = LoggerUtil.getAllForUser( user );
         LoggerUtil.log( TransactionType.VIEW_ACCESS_LOGS, user );
+        return entries;
+    }
+
+    /**
+     * Retrieves and returns the log entries for the currently logged in user
+     * for a start and end time
+     *
+     * @param startDate
+     *            start date of the log entries
+     * @param endDate
+     *            end date of the log entries
+     * @return log entries for a time period
+     */
+    @GetMapping ( BASE_PATH + "/logentries/{startDate}/{endDate}" )
+    public List<LogEntry> getDateLogEntries ( @PathVariable ( "startDate" ) final String startDate,
+            @PathVariable ( "endDate" ) final String endDate ) {
+        final String user = LoggerUtil.currentUser();
+        final List<LogEntry> entries = LoggerUtil.getAllByDates( user, startDate, endDate );
         return entries;
     }
 

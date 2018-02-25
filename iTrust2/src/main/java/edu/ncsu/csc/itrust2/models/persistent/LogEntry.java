@@ -126,9 +126,9 @@ public class LogEntry extends DomainObject<LogEntry> {
      * @param user
      *            The user to retrieve logs for.
      * @param startDate
-     *            Start date.
+     *            Starting date in the date range.
      * @param endDate
-     *            End date.
+     *            Ending date in the date range.
      * @return List of LogEntries sorted by date.
      */
     public static List<LogEntry> getAllByDates ( final String user, final String startDate, final String endDate ) {
@@ -144,19 +144,26 @@ public class LogEntry extends DomainObject<LogEntry> {
         final int endMonth = Integer.parseInt( endDateArray[1] );
         final int endDay = Integer.parseInt( endDateArray[2] );
 
-        // Check that the bounds of the dates are valid.
-        if ( startYear > endYear ) {
-            // Invalid year, return empty list.
+        // Get calendar instances for start and end dates.
+        final Calendar start = Calendar.getInstance();
+        start.clear();
+        final Calendar end = Calendar.getInstance();
+        end.clear();
+
+        // Set their values to the corresponding start and end date.
+        start.set( startYear, startMonth, startDay );
+        end.set( endYear, endMonth, endDay );
+
+        // Check if the start date happens after the end date.
+        if ( start.compareTo( end ) > 0 ) {
+            System.out.println( "Start is after End." );
+            // Start is after end, return empty list.
             return new ArrayList<LogEntry>();
         }
-        else if ( startMonth > endMonth ) {
-            // Invalid month, return empty list.
-            return new ArrayList<LogEntry>();
-        }
-        else if ( startDay > endDay ) {
-            // Invalid day, return empty list.
-            return new ArrayList<LogEntry>();
-        }
+
+        // Add 1 day to the end date. EXCLUSIVE boundary.
+        end.add( Calendar.DATE, 1 );
+
 
         // Get all the log entries for the currently logged in users.
         final List<LogEntry> all = LoggerUtil.getAllForUser( user );
@@ -167,23 +174,16 @@ public class LogEntry extends DomainObject<LogEntry> {
         for ( int i = 0; i < all.size(); i++ ) {
             // The current log entry being looked at in the all list.
             final LogEntry e = all.get( i );
-            // Log entry's time object.
+
+            // Log entry's Calendar object.
             final Calendar eTime = e.getTime();
-
-            // Get the date values.
-            final int eYear = eTime.get( Calendar.YEAR );
-            final int eMonth = eTime.get( Calendar.MONTH );
-            final int eDay = eTime.get( Calendar.DAY_OF_MONTH );
-
-            // Compare values of e's date to the given date range.
-            if ( eYear >= startYear && eYear <= endYear ) {
-                if ( eMonth >= startMonth && eMonth <= endMonth ) {
-                    if ( eDay >= startDay && eDay <= endDay ) {
-                        dateEntries.add( e );
-                    }
-                }
+            // If eTime is after (or equal to) the start date and before the end
+            // date, add it to the return list.
+            if ( eTime.compareTo( start ) >= 0 && eTime.compareTo( end ) < 0 ) {
+                dateEntries.add( e );
             }
         }
+        // Return the list.
         return dateEntries;
     }
 

@@ -6,22 +6,21 @@
 	<div th:fragment="content">
 		<h1>Welcome to iTrust2 - Patient</h1>
 		<script th:inline="javascript">
-		/* Otherwise Thymeleaf tries to parse Javascript as XML and breaks itself sometimes.  Sigh */
 		/*<![CDATA[*/
 			var app = angular.module("homeLogApp", []);
 			app.controller('manageLogCtrl', function($scope, $http) {
 
-				$scope.codes = [];
+				$scope.entries = [];
 				$scope.loadTable = function() {
-					// get list of icd codes from rest api
+					// get list of entries from rest api
 					$http.get("/iTrust2/api/v1/logentries/patient10").then(
 							function(response) {
-								$scope.codes = response.data; // or just response?
-								console.log($scope.codes);
+								$scope.entries = response.data;
+								console.log($scope.entries);
 								$scope.message = "";
 							}, function(rejection) {
-								$scope.codes = [];
-								$scope.codes = "Could not display log entries";
+								$scope.entries = [];
+								$scope.message = "Could not display log entries";
 							});
 				}			
 				
@@ -42,20 +41,22 @@
 					<th>Transaction Code</th>
 					<th>Primary User</th>
 					<th>Secondary User</th>
-					<th>Role of Secondary User </th>
-					<th>Date & Time </th>
+					<th>Role of Relative User</th>
+					<th>Date & Time</th>
 				</tr>
-				<tr name="codeRow" ng-repeat="c in codes " style="vertical-align: top">
-					<td name="userCell">{{c.logCode}}</td>
-					<td name="userCell">{{c.primaryUser}}</td>
-					<td name="userCell">{{c.secondaryUser}}</td>
-					<td name="userCell">{{c.message}}</td>
-					<td name="dateCell">{{c.time.year}}/{{c.time.month}}/{{c.time.dayOfMonth}} 
-						{{c.time.hourOfDay}}:{{(c.time.minute < 10?'0':'') + c.time.minute}}:{{(c.time.second < 10?'0':'') + c.time.second}}</td>
+				<tr name="codeRow" ng-repeat="e in entries " style="vertical-align: top">
+					<td name="userCell">{{e.logCode}}</td>
+					<td name="userCell">{{e.primaryUser}}</td>
+					<td name="userCell">{{e.secondaryUser}}</td>
+					<td name="userCell">{{e.message}}</td>
+					<td name="dateCell">{{e.time.year}}/{{(e.time.month + 1)}}/{{e.time.dayOfMonth}} 
+						{{e.time.hourOfDay}}:{{(e.time.minute < 10?'0':'') + e.time.minute}}:{{(e.time.second < 10?'0':'') + e.time.second}}</td>
 				</tr>
 			</table>
-			<input type="button" value="View Logs on Seperate Page" onclick="/iTrust2/patient/accessLogs" />
-		</div>
+			
+			<form action ="/iTrust2/patient/accessLogs">
+				<input type="submit" value="View Logs on Seperate Page"/>
+			</form>			
 	</div>
 </body>
 </html>

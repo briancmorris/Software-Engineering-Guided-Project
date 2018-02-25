@@ -125,4 +125,15 @@ public class PatientController {
         }
     }
 
+    /**
+     * Retrieves accessLogs page for a patient.
+     *
+     * @return The page to display
+     */
+    @RequestMapping ( value = "patient/accessLogs" )
+    @PreAuthorize ( "hasRole('ROLE_PATIENT')" )
+    public String accessLogs () {
+        return "patient/accessLogs";
+    }
+
 }

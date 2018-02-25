@@ -123,5 +123,13 @@ public class LogEntryTest {
         final String current = LoggerUtil.currentUser();
         assertTrue( current.equals( "SPRING_API_TEST_USER" ) );
 
+        final User testUser4 = new User();
+        testUser4.setUsername( "brianTestUser4" );
+        testUser4.setRole( Role.ROLE_ADMIN );
+
+        LoggerUtil.log( TransactionType.VIEW_ACCESS_LOGS, testUser4 );
+        final List<LogEntry> testList4 = LoggerUtil.getTopForUser( "brianTestUser4", new Integer( 10 ) );
+        assertTrue( testList4.size() > 0 );
+
     }
 }

@@ -54,7 +54,7 @@ public class LogEntryTest {
     public void testLogsByPatient () {
         // Test getBottomForPatient.
         List<LogEntry> testList = LoggerUtil.getBottomForPatient( "logPatient" );
-        assertTrue( testList.size() > 0 );
+        assertTrue( testList.size() <= 10 );
 
         // Log 11 additional events to ensure the event log is > 10.
         LoggerUtil.log( TransactionType.VIEW_ACCESS_LOGS, "logPatient" );

@@ -1,5 +1,7 @@
 package edu.ncsu.csc.itrust2.controllers.api;
 
+import java.util.ArrayList;
+import java.util.Comparator;
 import java.util.List;
 
 import org.springframework.http.HttpStatus;
@@ -10,6 +12,7 @@ import org.springframework.web.bind.annotation.RestController;
 
 import edu.ncsu.csc.itrust2.models.enums.TransactionType;
 import edu.ncsu.csc.itrust2.models.persistent.LogEntry;
+import edu.ncsu.csc.itrust2.models.persistent.User;
 import edu.ncsu.csc.itrust2.utils.LoggerUtil;
 
 /**
@@ -60,7 +63,41 @@ public class APILogEntryController extends APIController {
     @GetMapping ( BASE_PATH + "/logentries/user10" )
     public List<LogEntry> getTopTenLogEntriesForUser () {
         final String user = LoggerUtil.currentUser();
-        final List<LogEntry> entries = LoggerUtil.getTopForUser( user, new Integer( 10 ) );
+        final List<LogEntry> entries = LoggerUtil.getBottomForUser( user, new Integer( 10 ) );
+        return entries;
+    }
+
+    /**
+     * Retrieves and returns the top 10 log entries for the currently logged in
+     * user.
+     *
+     * @return response
+     */
+    @GetMapping ( BASE_PATH + "/logentries/patient10" )
+    public List<LogEntry> getTopTenPatientLogEntriesForUser () {
+        final String user = LoggerUtil.currentUser();
+        final List<LogEntry> entries = LoggerUtil.getBottomForPatient( user );
+        for ( int i = 0; i < entries.size(); i++ ) {
+            final LogEntry e = entries.get( i );
+            e.setMessage( "" );
+            final String primary = e.getPrimaryUser();
+            final String secondary = e.getSecondaryUser();
+            // If the logged in user is the primary user. Get the role
+            // of the secondary.
+            if ( user.equals( primary ) ) {
+                if ( secondary != null ) {
+                    final User u = User.getByName( secondary );
+                    final String role = u.getRole().toString();
+                    e.setMessage( role );
+                }
+            }
+            // Else, the logged in user is the secondary user. Get the
+            // role of the primary.
+            else {
+                e.setMessage( User.getByName( primary ).getRole().toString() );
+            }
+        }
+
         return entries;
     }
 
@@ -72,9 +109,108 @@ public class APILogEntryController extends APIController {
     @GetMapping ( BASE_PATH + "/logentries/userAll" )
     public List<LogEntry> getAllLogEntriesForUser () {
         final String user = LoggerUtil.currentUser();
-        final List<LogEntry> entries = LoggerUtil.getAllForUser( user );
         LoggerUtil.log( TransactionType.VIEW_ACCESS_LOGS, user );
+        List<LogEntry> entries = LoggerUtil.getAllForUser( user );
+
+        // Check if the user is a patient.
+        final User loggedIn = User.getByName( user );
+        if ( loggedIn.getRole().getCode() == 1 ) {
+            // User is a patient, make new list of only patient viewable
+            // entries.
+            final List<LogEntry> patientEntries = new ArrayList<LogEntry>();
+            for ( int i = 0; i < entries.size(); i++ ) {
+                final LogEntry e = entries.get( i );
+                if ( e.getLogCode().isPatientViewable() ) {
+                    e.setMessage( "" );
+                    final String primary = e.getPrimaryUser();
+                    final String secondary = e.getSecondaryUser();
+                    // If the logged in user is the primary user. Get the role
+                    // of the secondary.
+                    if ( user.equals( primary ) ) {
+                        if ( secondary != null ) {
+                            final User u = User.getByName( secondary );
+                            final String role = u.getRole().toString();
+                            e.setMessage( role );
+                        }
+                    }
+                    // Else, the logged in user is the secondary user. Get the
+                    // role of the primary.
+                    else {
+                        e.setMessage( User.getByName( primary ).getRole().toString() );
+                    }
+                    // Add the entry to the list.
+                    patientEntries.add( e );
+                }
+            }
+            entries = patientEntries;
+        }
+
+        // Sort the list by date, newest first.
+        entries.sort( new Comparator<Object>() {
+            @Override
+            public int compare ( final Object arg0, final Object arg1 ) {
+                return ( (LogEntry) arg1 ).getTime().compareTo( ( (LogEntry) arg0 ).getTime() );
+            }
+        } );
         return entries;
     }
 
+    /**
+     * Retrieves and returns the log entries for the currently logged in user
+     * within the given start date and end date.
+     *
+     * @param startDate
+     *            start date of the log entries to retrieve
+     * @param endDate
+     *            end date of the log entries to retrieve
+     * @return log entries for the given time period
+     */
+    @GetMapping ( BASE_PATH + "/logentries/{startDate}/{endDate}" )
+    public List<LogEntry> getDateLogEntries ( @PathVariable ( "startDate" ) final String startDate,
+            @PathVariable ( "endDate" ) final String endDate ) {
+        final String user = LoggerUtil.currentUser();
+        List<LogEntry> entries = LoggerUtil.getAllByDates( user, startDate, endDate );
+
+        // Check if the user is a patient.
+        final User loggedIn = User.getByName( user );
+        if ( loggedIn.getRole().getCode() == 1 ) {
+            // User is a patient, make new list of only patient viewable
+            // entries.
+            final List<LogEntry> patientEntries = new ArrayList<LogEntry>();
+            for ( int i = 0; i < entries.size(); i++ ) {
+                final LogEntry e = entries.get( i );
+                if ( e.getLogCode().isPatientViewable() ) {
+                    e.setMessage( "" );
+                    final String primary = e.getPrimaryUser();
+                    final String secondary = e.getSecondaryUser();
+                    // If the logged in user is the primary user. Get the role
+                    // of the secondary.
+                    if ( user.equals( primary ) ) {
+                        if ( secondary != null ) {
+                            final User u = User.getByName( secondary );
+                            final String role = u.getRole().toString();
+                            e.setMessage( role );
+                        }
+                    }
+                    // Else, the logged in user is the secondary user. Get the
+                    // role of the primary.
+                    else {
+                        e.setMessage( User.getByName( primary ).getRole().toString() );
+                    }
+                    // Add the entry to the list.
+                    patientEntries.add( e );
+                }
+            }
+            entries = patientEntries;
+        }
+
+        // Sort the list by date, newest first.
+        entries.sort( new Comparator<Object>() {
+            @Override
+            public int compare ( final Object arg0, final Object arg1 ) {
+                return ( (LogEntry) arg1 ).getTime().compareTo( ( (LogEntry) arg0 ).getTime() );
+            }
+        } );
+        return entries;
+    }
 }

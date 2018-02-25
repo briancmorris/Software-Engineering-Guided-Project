@@ -1,5 +1,6 @@
 package edu.ncsu.csc.itrust2.models.persistent;
 
+import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.List;
 
@@ -14,6 +15,7 @@ import org.hibernate.criterion.Criterion;
 import org.hibernate.criterion.Restrictions;
 
 import edu.ncsu.csc.itrust2.models.enums.TransactionType;
+import edu.ncsu.csc.itrust2.utils.LoggerUtil;
 
 /**
  * Class that represents a LogEntry that is created in response to certain user
@@ -118,6 +120,74 @@ public class LogEntry extends DomainObject<LogEntry> {
     }
 
     /**
+     * Retrieve all the LogEntries for the currently logged in User by the
+     * specified date range.
+     *
+     * @param user
+     *            The user to retrieve logs for.
+     * @param startDate
+     *            Starting date in the date range.
+     * @param endDate
+     *            Ending date in the date range.
+     * @return List of LogEntries sorted by date.
+     */
+    public static List<LogEntry> getAllByDates ( final String user, final String startDate, final String endDate ) {
+        // Parse the start string for year, month, and day.
+        final String[] startDateArray = startDate.split( "-" );
+        final int startYear = Integer.parseInt( startDateArray[0] );
+        final int startMonth = Integer.parseInt( startDateArray[1] );
+        final int startDay = Integer.parseInt( startDateArray[2] );
+
+        // Parse the end string for year, month, and day.
+        final String[] endDateArray = endDate.split( "-" );
+        final int endYear = Integer.parseInt( endDateArray[0] );
+        final int endMonth = Integer.parseInt( endDateArray[1] );
+        final int endDay = Integer.parseInt( endDateArray[2] );
+
+        // Get calendar instances for start and end dates.
+        final Calendar start = Calendar.getInstance();
+        start.clear();
+        final Calendar end = Calendar.getInstance();
+        end.clear();
+
+        // Set their values to the corresponding start and end date.
+        start.set( startYear, startMonth, startDay );
+        end.set( endYear, endMonth, endDay );
+
+        // Check if the start date happens after the end date.
+        if ( start.compareTo( end ) > 0 ) {
+            System.out.println( "Start is after End." );
+            // Start is after end, return empty list.
+            return new ArrayList<LogEntry>();
+        }
+
+        // Add 1 day to the end date. EXCLUSIVE boundary.
+        end.add( Calendar.DATE, 1 );
+
+
+        // Get all the log entries for the currently logged in users.
+        final List<LogEntry> all = LoggerUtil.getAllForUser( user );
+        // Create a new list to return.
+        final List<LogEntry> dateEntries = new ArrayList<LogEntry>();
+
+        // Compare the dates of the entries and the given function parameters.
+        for ( int i = 0; i < all.size(); i++ ) {
+            // The current log entry being looked at in the all list.
+            final LogEntry e = all.get( i );
+
+            // Log entry's Calendar object.
+            final Calendar eTime = e.getTime();
+            // If eTime is after (or equal to) the start date and before the end
+            // date, add it to the return list.
+            if ( eTime.compareTo( start ) >= 0 && eTime.compareTo( end ) < 0 ) {
+                dateEntries.add( e );
+            }
+        }
+        // Return the list.
+        return dateEntries;
+    }
+
+    /**
      * Create a LogEntry from the most complete set of information.
      *
      * @param code
@@ -177,6 +247,7 @@ public class LogEntry extends DomainObject<LogEntry> {
      * @return Username of the secondary user
      */
     public String getSecondaryUser () {
+
         return secondaryUser;
     }
 
@@ -191,19 +262,19 @@ public class LogEntry extends DomainObject<LogEntry> {
     }
 
     /**
-     * Retrieves the optional Message on the LogEntry
+     * Retrieves the optional Role on the LogEntry
      *
-     * @return Any message present
+     * @return Any role of the user
      */
     public String getMessage () {
         return message;
     }
 
     /**
-     * Sets the optional Message on the LogEntry
+     * Sets the optional role on the log entry
      *
      * @param message
-     *            New Message to set
+     *            the role of the seconday
      */
     public void setMessage ( final String message ) {
         this.message = message;

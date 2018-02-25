@@ -1,10 +1,61 @@
 <html xmlns:th="http://www.thymeleaf.org">
 <head th:include="layout :: head(title=~{::title},links=~{})">
+<script src="https://ajax.googleapis.com/ajax/libs/angularjs/1.6.4/angular.min.js"></script>
 <title>Admin Home</title>
 </head>
 <body th:include="layout :: body" th:with="content=~{::content}">
 	<div th:fragment="content">
 		<h1>Welcome to iTrust2 - Admin</h1>
+				<script th:inline="javascript">
+		/*<![CDATA[*/
+			var app = angular.module("homeLogApp", []);
+			app.controller('manageLogCtrl', function($scope, $http) {
+
+				$scope.entries = [];
+				$scope.loadTable = function() {
+					// get list of entries from rest api
+					$http.get("/iTrust2/api/v1/logentries/user10").then(
+							function(response) {
+								$scope.entries = response.data;
+								$scope.message = "";
+							}, function(rejection) {
+								$scope.entries = [];
+								$scope.message = "Could not display log entries";
+							});
+				}			
+				
+				// load table upon page loading
+				$scope.loadTable();
+			});
+			/*]]>*/
+		</script>
+		
+		<div ng-app="homeLogApp" ng-controller="manageLogCtrl" ng-cloak>
+		<!-- Info on tables from https://hello-angularjs.appspot.com/removetablerow -->			
+			<h4 style="color:red" ng-model="message"></h4>
+			
+			<h1>Log Entries</h1>
+
+			<table class="table" style = "width:100%">
+				<tr style="vertical-align: top">
+					<th>Transaction Code</th>
+					<th>Primary User</th>
+					<th>Date & Time</th>
+				</tr>
+				<tr name="codeRow" ng-repeat="e in entries " style="vertical-align: top">
+					<td name="userCell">{{e.logCode}}</td>
+					<td name="userCell">{{e.primaryUser}}</td>
+					<td name="dateCell">{{e.time.year}}/{{(e.time.month + 1)}}/{{e.time.dayOfMonth}} 
+						{{e.time.hourOfDay}}:{{(e.time.minute < 10?'0':'') + e.time.minute}}:{{(e.time.second < 10?'0':'') + e.time.second}}</td>
+				</tr>
+			</table>
+			
+			<form action ="/iTrust2/admin/accessLogs">
+				<input type="submit" value="View Logs on Seperate Page"/>
+			</form>
+		</div>
 	</div>
+	</div>
+	
 </body>
 </html>

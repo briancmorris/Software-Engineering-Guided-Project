@@ -1,5 +1,6 @@
 package edu.ncsu.csc.itrust2.utils;
 
+import java.util.ArrayList;
 import java.util.Comparator;
 import java.util.List;
 
@@ -100,6 +101,21 @@ public class LoggerUtil {
     }
 
     /**
+     * Retrieve all of the Log Entries for a given user
+     *
+     * @param user
+     *            The User to retrieve log entries for
+     * @param startDate
+     *            the start date for logs
+     * @param endDate
+     *            the end date for logs
+     * @return The List of Log Entries that was found
+     */
+    static public List<LogEntry> getAllByDates ( final String user, final String startDate, final String endDate ) {
+        return LogEntry.getAllByDates( user, startDate, endDate );
+    }
+
+    /**
      * Get the top logged events for a single user specified by name.
      *
      * @param user
@@ -123,6 +139,37 @@ public class LoggerUtil {
         }
         catch ( final IndexOutOfBoundsException e ) { /*
                                                        * If num < top (ie, fewer
+                                                       * records exist than were
+                                                       * requested) return all
+                                                       */
+            return all;
+        }
+    }
+
+    /**
+     * Get the bottom logged events for a single user specified by name.
+     *
+     * @param user
+     *            User to find LogEntries for
+     * @param bot
+     *            Number of events to find
+     * @return A List of the LogEntry Entries for the user. If the number of
+     *         Entries is less than `bot`, returns all
+     */
+    static public List<LogEntry> getBottomForUser ( final String user, final Integer bot ) {
+        final List<LogEntry> all = getAllForUser( user );
+        all.sort( new Comparator<Object>() {
+            @Override
+            public int compare ( final Object arg0, final Object arg1 ) {
+                return ( (LogEntry) arg1 ).getTime().compareTo( ( (LogEntry) arg0 ).getTime() );
+            }
+
+        } );
+        try {
+            return all.subList( 0, bot );
+        }
+        catch ( final IndexOutOfBoundsException e ) { /*
+                                                       * If num < bot (ie, fewer
                                                        * records exist than were
                                                        * requested) return all
                                                        */
@@ -158,4 +205,38 @@ public class LoggerUtil {
             return "SPRING_API_TEST_USER"; // API tests have no explicit user
         }
     }
+
+    /**
+     * Retrieves the bottom 10 entries for a patient in the database sorted by
+     * date.
+     *
+     * @param user
+     *            the patient to get entries for
+     * @return the bottom 10 entries for the patient in the database
+     */
+    public static List<LogEntry> getBottomForPatient ( final String user ) {
+        // sorts the list of all logs for user
+        final List<LogEntry> all = getAllForUser( user );
+        all.sort( new Comparator<Object>() {
+            @Override
+            public int compare ( final Object arg0, final Object arg1 ) {
+                return ( (LogEntry) arg1 ).getTime().compareTo( ( (LogEntry) arg0 ).getTime() );
+            }
+
+        } );
+
+        // creates a new list user that has log that are patient viewable
+        final List<LogEntry> view = new ArrayList<LogEntry>();
+        for ( int i = 0; i < all.size(); i++ ) {
+            if ( view.size() >= 10 ) {
+                return view;
+            }
+            if ( all.get( i ).getLogCode().isPatientViewable() ) {
+                view.add( all.get( i ) );
+            }
+        }
+
+        return view;
+    }
+
 }

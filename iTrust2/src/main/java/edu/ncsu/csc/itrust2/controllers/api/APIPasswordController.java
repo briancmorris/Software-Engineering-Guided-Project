@@ -159,12 +159,16 @@ public class APIPasswordController extends APIController {
             body += "\nIf you did not request a password reset, please contact a system administrator.\n\n--iTrust2 Admin";
             EmailUtil.sendEmail( addr, "iTrust2 Password Reset", body );
 
+            LoggerUtil.log( TransactionType.EMAIL_PASSWORD_CHANGE, user.getUsername(),
+                    "Email sent to " + user.getUsername() + " for password reset request notification." );
             LoggerUtil.log( TransactionType.PASSWORD_UPDATE_SUCCESS, user.getUsername(),
                     "Successfully changed password for user " + user.getUsername() );
             return new ResponseEntity( successResponse( "" ), HttpStatus.OK );
         }
         catch ( final Exception e ) {
             e.printStackTrace();
+            LoggerUtil.log( TransactionType.EMAIL_NOT_SENT, user.getUsername(),
+                    "Unable to send email to " + user.getUsername() + " for password reset notification." );
             LoggerUtil.log( TransactionType.PASSWORD_UPDATE_FAILURE, user.getUsername(),
                     "Could not change password for user with username " + username );
             return new ResponseEntity( errorResponse( "Could not complete request due to: " + e.getMessage() ),

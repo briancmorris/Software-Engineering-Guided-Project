@@ -17,7 +17,6 @@ import org.openqa.selenium.chrome.ChromeOptions;
 import org.openqa.selenium.support.ui.Select;
 import org.openqa.selenium.support.ui.WebDriverWait;
 
-import cucumber.api.java.After;
 import cucumber.api.java.Before;
 import cucumber.api.java.en.Given;
 import cucumber.api.java.en.Then;
@@ -26,6 +25,7 @@ import edu.ncsu.csc.itrust2.utils.HibernateDataGenerator;
 import io.github.bonigarcia.wdm.ChromeDriverManager;
 
 public class LogEntryStepDefs {
+
     private WebDriver    driver;
     private final String baseUrl = "http://localhost:8080/iTrust2";
     WebDriverWait        wait;
@@ -42,16 +42,48 @@ public class LogEntryStepDefs {
         HibernateDataGenerator.refreshDB(); // hcp should have valid email
     }
 
-    @After
+    // @After
     public void tearDown () {
         driver.close();
         driver.quit();
     }
 
     @Given ( "A patient already exists in the system" )
-    public void patientExists () {
-        // All tests can safely assume the existence of the 'hcp', 'admin', and
-        // 'patient' users
+    public void createPatient () {
+        // log in as admin then create a patient
+        driver.get( baseUrl );
+        final WebElement username = driver.findElement( By.name( "username" ) );
+        username.clear();
+        username.sendKeys( "admin" );
+        final WebElement password = driver.findElement( By.name( "password" ) );
+        password.clear();
+        password.sendKeys( "123456" );
+        final WebElement submit = driver.findElement( By.className( "btn" ) );
+        submit.click();
+
+        ( (JavascriptExecutor) driver ).executeScript( "document.getElementById('addnewuser').click();" );
+
+        final WebElement newuser = driver.findElement( By.id( "username" ) );
+        newuser.clear();
+        newuser.sendKeys( "Joel1" );
+
+        final WebElement newpass = driver.findElement( By.id( "password" ) );
+        newpass.clear();
+        newpass.sendKeys( "123456" );
+
+        final WebElement newpass2 = driver.findElement( By.id( "password2" ) );
+        newpass2.clear();
+        newpass2.sendKeys( "123456" );
+
+        final Select drpdown = new Select( driver.findElement( By.id( "role" ) ) );
+        drpdown.selectByVisibleText( "ROLE_PATIENT" );
+
+        final WebElement enabled = driver.findElement( By.name( "enabled" ) );
+        enabled.click();
+        final WebElement btn = driver.findElement( By.className( "btn" ) );
+        btn.click();
+
+        driver.findElement( By.id( "logout" ) ).click();
     }
 
     @When ( "I Log in as an existing patient" )
@@ -59,7 +91,7 @@ public class LogEntryStepDefs {
         driver.get( baseUrl );
         final WebElement username = driver.findElement( By.name( "username" ) );
         username.clear();
-        username.sendKeys( "patient" );
+        username.sendKeys( "Joel1" );
         final WebElement password = driver.findElement( By.name( "password" ) );
         password.clear();
         password.sendKeys( "123456" );
@@ -81,12 +113,7 @@ public class LogEntryStepDefs {
 
     @Given ( "A admin already exists in the system" )
     public void adminExists () {
-        // All tests can safely assume the existence of the 'hcp', 'admin', and
-        // 'patient' users
-    }
-
-    @When ( "I Log in as an existing admin" )
-    public void loginAsAdmin () {
+        // log in as admin then create a patient
         driver.get( baseUrl );
         final WebElement username = driver.findElement( By.name( "username" ) );
         username.clear();
@@ -97,12 +124,81 @@ public class LogEntryStepDefs {
         final WebElement submit = driver.findElement( By.className( "btn" ) );
         submit.click();
 
+        ( (JavascriptExecutor) driver ).executeScript( "document.getElementById('addnewuser').click();" );
+
+        final WebElement newuser = driver.findElement( By.id( "username" ) );
+        newuser.clear();
+        newuser.sendKeys( "Joel2" );
+
+        final WebElement newpass = driver.findElement( By.id( "password" ) );
+        newpass.clear();
+        newpass.sendKeys( "123456" );
+
+        final WebElement newpass2 = driver.findElement( By.id( "password2" ) );
+        newpass2.clear();
+        newpass2.sendKeys( "123456" );
+
+        final Select drpdown = new Select( driver.findElement( By.id( "role" ) ) );
+        drpdown.selectByVisibleText( "ROLE_ADMIN" );
+
+        final WebElement enabled = driver.findElement( By.name( "enabled" ) );
+        enabled.click();
+        final WebElement btn = driver.findElement( By.className( "btn" ) );
+        btn.click();
+
+        driver.findElement( By.id( "logout" ) ).click();
+    }
+
+    @When ( "I Log in as an existing admin" )
+    public void loginAsAdmin () {
+        driver.get( baseUrl );
+        final WebElement username = driver.findElement( By.name( "username" ) );
+        username.clear();
+        username.sendKeys( "Joel2" );
+        final WebElement password = driver.findElement( By.name( "password" ) );
+        password.clear();
+        password.sendKeys( "123456" );
+        final WebElement submit = driver.findElement( By.className( "btn" ) );
+        submit.click();
+
     }
 
     @Given ( "A hcp already exists in the system" )
     public void hcpExists () {
-        // All tests can safely assume the existence of the 'hcp', 'admin', and
-        // 'patient' users
+        // log in as admin then create a patient
+        driver.get( baseUrl );
+        final WebElement username = driver.findElement( By.name( "username" ) );
+        username.clear();
+        username.sendKeys( "admin" );
+        final WebElement password = driver.findElement( By.name( "password" ) );
+        password.clear();
+        password.sendKeys( "123456" );
+        final WebElement submit = driver.findElement( By.className( "btn" ) );
+        submit.click();
+
+        ( (JavascriptExecutor) driver ).executeScript( "document.getElementById('addnewuser').click();" );
+
+        final WebElement newuser = driver.findElement( By.id( "username" ) );
+        newuser.clear();
+        newuser.sendKeys( "Joel3" );
+
+        final WebElement newpass = driver.findElement( By.id( "password" ) );
+        newpass.clear();
+        newpass.sendKeys( "123456" );
+
+        final WebElement newpass2 = driver.findElement( By.id( "password2" ) );
+        newpass2.clear();
+        newpass2.sendKeys( "123456" );
+
+        final Select drpdown = new Select( driver.findElement( By.id( "role" ) ) );
+        drpdown.selectByVisibleText( "ROLE_HCP" );
+
+        final WebElement enabled = driver.findElement( By.name( "enabled" ) );
+        enabled.click();
+        final WebElement btn = driver.findElement( By.className( "btn" ) );
+        btn.click();
+
+        driver.findElement( By.id( "logout" ) ).click();
     }
 
     @When ( "I Log in as an existing hcp" )
@@ -110,7 +206,7 @@ public class LogEntryStepDefs {
         driver.get( baseUrl );
         final WebElement username = driver.findElement( By.name( "username" ) );
         username.clear();
-        username.sendKeys( "hcp" );
+        username.sendKeys( "Joel3" );
         final WebElement password = driver.findElement( By.name( "password" ) );
         password.clear();
         password.sendKeys( "123456" );

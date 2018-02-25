@@ -67,6 +67,7 @@ public class PrescriptionsStepDefs {
     @Given ( "I have logged in with username: (.+)" )
     public void login ( final String username ) {
         driver.get( baseUrl );
+        wait.until( ExpectedConditions.visibilityOfElementLocated( By.id( "username" ) ) );
 
         enterValue( "username", username );
         enterValue( "password", "123456" );
@@ -156,11 +157,18 @@ public class PrescriptionsStepDefs {
     }
 
     @When ( "submit the values for NDC (.+), name (.+), and description (.*)" )
-    public void submitDrug ( final String ndc, final String name, final String description ) {
+    public void submitDrug ( final String ndc, final String name, final String description )
+            throws InterruptedException {
+        // Piazza Solution, thanks Kai.
+        wait.until( ExpectedConditions.visibilityOfElementLocated( By.tagName( "h3" ) ) );
+        assertEquals( "Admin Manage Drugs", driver.findElement( By.tagName( "h3" ) ).getText() );
+
+        Thread.sleep( 250 );
         enterValue( "drug", name );
         enterValue( "code", ndc );
         enterValue( "description", description );
         driver.findElement( By.name( "submit" ) ).click();
+
     }
 
     @Then ( "the drug (.+) is successfully added to the system" )

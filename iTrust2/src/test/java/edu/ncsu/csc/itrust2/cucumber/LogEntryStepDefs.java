@@ -22,7 +22,6 @@ import cucumber.api.java.Before;
 import cucumber.api.java.en.Given;
 import cucumber.api.java.en.Then;
 import cucumber.api.java.en.When;
-import edu.ncsu.csc.itrust2.utils.HibernateDataGenerator;
 import io.github.bonigarcia.wdm.ChromeDriverManager;
 
 public class LogEntryStepDefs {
@@ -40,7 +39,6 @@ public class LogEntryStepDefs {
         options.addArguments( "blink-settings=imagesEnabled=false" );
         driver = new ChromeDriver( options );
         wait = new WebDriverWait( driver, 5 );
-        HibernateDataGenerator.refreshDB(); // hcp should have valid email
     }
 
     @After

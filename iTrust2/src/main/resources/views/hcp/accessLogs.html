@@ -12,7 +12,7 @@
 		/*<![CDATA[*/
 			var app = angular.module("tableApp", []);
 			app.controller('tableCtrl', function($scope, $http) {
-				$scope.codes = [];
+				$scope.entries = [];
 				$scope.loadTable = function() {
 					// Get list of entries from rest api.
 					$http.get("/iTrust2/api/v1/logentries/userAll").then(

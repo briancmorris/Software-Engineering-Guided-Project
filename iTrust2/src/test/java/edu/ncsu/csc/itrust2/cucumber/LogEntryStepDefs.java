@@ -17,6 +17,7 @@ import org.openqa.selenium.chrome.ChromeOptions;
 import org.openqa.selenium.support.ui.Select;
 import org.openqa.selenium.support.ui.WebDriverWait;
 
+import cucumber.api.java.After;
 import cucumber.api.java.Before;
 import cucumber.api.java.en.Given;
 import cucumber.api.java.en.Then;
@@ -41,7 +42,7 @@ public class LogEntryStepDefs {
         HibernateDataGenerator.refreshDB(); // hcp should have valid email
     }
 
-    // @After
+    @After
     public void tearDown () {
         driver.close();
         driver.quit();
@@ -67,7 +68,7 @@ public class LogEntryStepDefs {
 
     }
 
-    @Then ( "The patient home page has log entries" )
+    @Then ( "The home page has 1 log entries" )
     public void patientupdatedSuccessfully () {
         final List<WebElement> cells = driver.findElements( By.tagName( "tr" ) );
         // there should be 1 row for header
@@ -98,14 +99,6 @@ public class LogEntryStepDefs {
 
     }
 
-    @Then ( "The admin home page has log entries" )
-    public void adminupdatedSuccessfully () {
-        final List<WebElement> cells = driver.findElements( By.tagName( "tr" ) );
-        // there should be 1 row for header
-        assertEquals( cells.size(), 2 );
-
-    }
-
     @Given ( "A hcp already exists in the system" )
     public void hcpExists () {
         // All tests can safely assume the existence of the 'hcp', 'admin', and
@@ -126,12 +119,10 @@ public class LogEntryStepDefs {
 
     }
 
-    @Then ( "The hcp home page has log entries" )
-    public void hcppdatedSuccessfully () {
-        final List<WebElement> cells = driver.findElements( By.tagName( "tr" ) );
-        // there should be 1 row for header
-        assertEquals( cells.size(), 2 );
-
+    @Given ( "Previous patient still exists in the system" )
+    public void patientPreviousExists () {
+        // All tests can safely assume the existence of the 'hcp', 'admin', and
+        // 'patient' users
     }
 
     @When ( "I make 10 appointment and go to home page" )
@@ -156,6 +147,12 @@ public class LogEntryStepDefs {
         }
 
         driver.findElement( By.className( "navbar-brand" ) ).click();
+    }
+
+    @Given ( "Previous admin still exists in the system" )
+    public void adminPreviousExists () {
+        // All tests can safely assume the existence of the 'hcp', 'admin', and
+        // 'patient' users
     }
 
     @When ( "I add 10 hospitals and go to home page" )

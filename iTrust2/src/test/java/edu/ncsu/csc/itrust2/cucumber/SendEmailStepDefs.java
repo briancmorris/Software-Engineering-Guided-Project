@@ -23,7 +23,6 @@ import edu.ncsu.csc.itrust2.models.persistent.DomainObject;
 import edu.ncsu.csc.itrust2.models.persistent.LoginAttempt;
 import edu.ncsu.csc.itrust2.models.persistent.LoginBan;
 import edu.ncsu.csc.itrust2.models.persistent.LoginLockout;
-import edu.ncsu.csc.itrust2.utils.HibernateDataGenerator;
 import io.github.bonigarcia.wdm.ChromeDriverManager;
 
 public class SendEmailStepDefs {
@@ -41,7 +40,7 @@ public class SendEmailStepDefs {
         driver = new ChromeDriver( options );
         wait = new WebDriverWait( driver, 5 );
 
-        HibernateDataGenerator.refreshDB(); // hcp should have valid email
+        // hcp should have valid email
     }
 
     @After
@@ -49,7 +48,6 @@ public class SendEmailStepDefs {
         DomainObject.deleteAll( LoginAttempt.class );
         DomainObject.deleteAll( LoginLockout.class );
         DomainObject.deleteAll( LoginBan.class );
-        HibernateDataGenerator.refreshDB();
         driver.close();
         driver.quit();
     }

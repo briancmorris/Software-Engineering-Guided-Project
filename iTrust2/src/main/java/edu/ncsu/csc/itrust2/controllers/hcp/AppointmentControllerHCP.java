@@ -55,7 +55,7 @@ public class AppointmentControllerHCP {
         /* Log the event */
         appointment.stream().map( AppointmentRequest::getPatient )
                 .forEach( e -> LoggerUtil.log( TransactionType.APPOINTMENT_REQUEST_VIEWED,
-                        SecurityContextHolder.getContext().getAuthentication().getName(), e.getUsername() ) );
+                        SecurityContextHolder.getContext().getAuthentication().getName(), e.getUsername(), null ) );
 
         model.addAttribute( "appointments", appointments );
         model.addAttribute( "appointmentForm", new AppointmentForm() );
@@ -85,7 +85,7 @@ public class AppointmentControllerHCP {
         ar.save();
         LoggerUtil.log(
                 aptAction ? TransactionType.APPOINTMENT_REQUEST_DENIED : TransactionType.APPOINTMENT_REQUEST_APPROVED,
-                ar.getHcp().getUsername(), ar.getPatient().getUsername() );
+                ar.getHcp().getUsername(), ar.getPatient().getUsername(), null );
         sendAppointmentStatusEmail( ar.getPatient(), aptAction );
         return "hcp/viewAppointmentRequestsResult";
     }
@@ -142,7 +142,7 @@ public class AppointmentControllerHCP {
         /* Log the event */
         appointment.stream().map( AppointmentRequest::getPatient )
                 .forEach( e -> LoggerUtil.log( TransactionType.APPOINTMENT_REQUEST_VIEWED,
-                        SecurityContextHolder.getContext().getAuthentication().getName(), e.getUsername() ) );
+                        SecurityContextHolder.getContext().getAuthentication().getName(), e.getUsername(), null ) );
         final List<AppointmentRequestForm> appointments = new Vector<AppointmentRequestForm>();
         for ( final AppointmentRequest ar : appointment ) {
             appointments.add( new AppointmentRequestForm( ar ) );

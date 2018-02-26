@@ -75,7 +75,7 @@ public class APIOfficeVisitController extends APIController {
             final User self = User.getByName( LoggerUtil.currentUser() );
             if ( null != self && self.getRole().equals( Role.ROLE_HCP ) ) {
                 LoggerUtil.log( TransactionType.OFFICE_VISIT_HCP_VIEW, LoggerUtil.currentUser(),
-                        visit.getPatient().getUsername() );
+                        visit.getPatient().getUsername(), null );
             }
             else {
                 LoggerUtil.log( TransactionType.OFFICE_VISIT_PATIENT_VIEW, LoggerUtil.currentUser() );
@@ -112,7 +112,7 @@ public class APIOfficeVisitController extends APIController {
             }
             visit.save();
             LoggerUtil.log( TransactionType.OFFICE_VISIT_CREATE, LoggerUtil.currentUser(),
-                    visit.getPatient().getUsername() );
+                    visit.getPatient().getUsername(), null );
             return new ResponseEntity( visit, HttpStatus.OK );
 
         }

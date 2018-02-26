@@ -69,7 +69,7 @@ public class APILogEntryController extends APIController {
 
     /**
      * Retrieves and returns the top 10 log entries for the currently logged in
-     * user.
+     * patient.
      *
      * @return response
      */

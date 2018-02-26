@@ -94,7 +94,7 @@ public class AdminUserController {
                     break;
             }
             LoggerUtil.log( TransactionType.CREATE_USER,
-                    SecurityContextHolder.getContext().getAuthentication().getName(), u.getUsername() );
+                    SecurityContextHolder.getContext().getAuthentication().getName(), u.getUsername(), null );
             return "admin/addUserResult";
         }
     }

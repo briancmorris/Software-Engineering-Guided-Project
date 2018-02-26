@@ -88,4 +88,48 @@ public class LogEntryTest {
         testList = LoggerUtil.getBottomForUser( "brianTestPatient", new Integer( 10 ) );
         assertEquals( testList.size(), 10 );
     }
+
+    /**
+     * Tests the LoggerUtilFunctionality with User objects.
+     */
+    @Test
+    public void testLogsByUser () {
+        // Create a user to work with.
+        final User testUser1 = new User();
+        testUser1.setUsername( "brianTestUser1" );
+        testUser1.setRole( Role.ROLE_ADMIN );
+
+        // Log using a User object instead of user name.
+        LoggerUtil.log( TransactionType.VIEW_ACCESS_LOGS, testUser1 );
+        final List<LogEntry> testList1 = LoggerUtil.getBottomForUser( "brianTestUser1", new Integer( 10 ) );
+        assertTrue( testList1.size() > 0 );
+
+        // Create two users to work with.
+        final User testUser2 = new User();
+        testUser2.setUsername( "brianTestUser2" );
+        testUser2.setRole( Role.ROLE_HCP );
+        final User testUser3 = new User();
+        testUser3.setUsername( "brianTestUser3" );
+        testUser3.setRole( Role.ROLE_PATIENT );
+
+        // Log using User objects instead of user names.
+        LoggerUtil.log( TransactionType.APPOINTMENT_REQUEST_APPROVED, testUser2, testUser3 );
+        // Get the lists for each user.
+        final List<LogEntry> testList2 = LoggerUtil.getBottomForUser( "brianTestUser2", new Integer( 10 ) );
+        final List<LogEntry> testList3 = LoggerUtil.getBottomForPatient( "brianTestUser3" );
+
+        assertEquals( testList2.size(), testList3.size() );
+
+        final String current = LoggerUtil.currentUser();
+        assertTrue( current.equals( "SPRING_API_TEST_USER" ) );
+
+        final User testUser4 = new User();
+        testUser4.setUsername( "brianTestUser4" );
+        testUser4.setRole( Role.ROLE_ADMIN );
+
+        LoggerUtil.log( TransactionType.VIEW_ACCESS_LOGS, testUser4 );
+        final List<LogEntry> testList4 = LoggerUtil.getTopForUser( "brianTestUser4", new Integer( 10 ) );
+        assertTrue( testList4.size() > 0 );
+
+    }
 }

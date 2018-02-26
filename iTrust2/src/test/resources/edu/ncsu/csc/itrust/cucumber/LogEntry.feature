@@ -20,13 +20,13 @@ Scenario: Check hcp logs
 	Then The home page has 2 log entries
 
 Scenario: Check patient has over 10 logs
-	Given A patient already exists in the system
+	Given Previous patient still exists in the system
 	When I Log in as an existing patient
 	When I make 10 appointment and go to home page
 	Then The home page has 10 log entries
 
 Scenario: Check admin has over 10 logs
-	Given A admin already exists in the system
+	Given Previous admin still exists in the system
 	When I Log in as an existing admin
 	When I add 10 hospitals and go to home page
 	Then The home page has 10 log entries

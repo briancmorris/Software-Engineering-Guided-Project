@@ -110,6 +110,17 @@ public class LogEntryStepDefs {
 
     }
 
+    @Then ( "The home page has 2 log entries" )
+    public void userupdatedSuccessfully () {
+        final List<WebElement> cells = driver.findElements( By.tagName( "tr" ) );
+        // there should be 1 row for header and 1 for the account being creatd
+        assertEquals( cells.size(), 3 );
+
+        // logout
+        driver.findElement( By.id( "logout" ) ).click();
+
+    }
+
     @Given ( "A admin already exists in the system" )
     public void adminExists () {
         // log in as admin then create a patient

@@ -12,12 +12,12 @@ Scenario: Check patient logs
 Scenario: Check admin logs
 	Given A admin already exists in the system
 	When I Log in as an existing admin
-	Then The home page has 1 log entries
+	Then The home page has 2 log entries
 
 Scenario: Check hcp logs
 	Given A hcp already exists in the system
 	When I Log in as an existing hcp
-	Then The home page has 1 log entries
+	Then The home page has 2 log entries
 
 Scenario: Check patient has over 10 logs
 	Given A patient already exists in the system
